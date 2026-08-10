@@ -12,7 +12,8 @@ Scrap Node (03/03/26). Librairie Angular : tokens, composants, layouts.
 | Palette | `#000000` noir · `#322216` brun foncé · `#956140` cuivre · `#718993` bleu-gris · `#FFFFFF` blanc |
 | Titres | Helvetica 900, capitales, léger désaxage « tampon » |
 | Corps | Arial |
-| Style | Grunge/récup : grain, bords déchirés, ombres dures, tampons |
+| Style | Grunge/récup : grain, bords déchirés, ombres dures, tampons, éclaboussures |
+| Sémantiques | erreur `rouille #8a3324` · succès `mousse #5f7a3f` · avertissement `ocre #b3822f` · info `bleu-gris` |
 | Thèmes | Clair et sombre (auto via OS, ou forcé par `data-scrap-theme` sur `<html>`) |
 
 ## Utilisation dans un projet
@@ -30,8 +31,16 @@ Dans `styles.scss` du projet :
 
 Dans un composant :
 
+Ou en une commande une fois la lib installée : `ng add scrap-ui` (ajoute l'import du thème dans styles.scss).
+
+Dans un composant :
+
 ```ts
-import { ScrapButton, ScrapCard, ScrapField, ScrapHeader, ScrapFooter, ScrapIcon, ScrapThemeToggle } from 'scrap-ui';
+import {
+  ScrapBadge, ScrapButton, ScrapCard, ScrapEmptyState, ScrapErrorPage,
+  ScrapField, ScrapFooter, ScrapHeader, ScrapIcon, ScrapModal, ScrapSpinner,
+  ScrapSplat, ScrapTab, ScrapTabs, ScrapThemeToggle, ScrapToast, ScrapToasts,
+} from 'scrap-ui';
 ```
 
 ```html
@@ -51,11 +60,51 @@ import { ScrapButton, ScrapCard, ScrapField, ScrapHeader, ScrapFooter, ScrapIcon
 </scrap-field>
 
 <scrap-footer appName="Mon Projet">…</scrap-footer>
+
+<!-- Badges sémantiques -->
+<scrap-badge tone="success">OK</scrap-badge>
+
+<!-- Onglets -->
+<scrap-tabs>
+  <scrap-tab label="Détails">…</scrap-tab>
+  <scrap-tab label="Notes">…</scrap-tab>
+</scrap-tabs>
+
+<!-- Modale (deux-way binding sur un signal) -->
+<scrap-modal [(open)]="showModal" title="Confirmer">
+  contenu…
+  <div actions><button scrap-button>OK</button></div>
+</scrap-modal>
+
+<!-- Toasts : poser <scrap-toasts /> dans le layout racine, puis
+     inject(ScrapToast).show('Enregistré', 'success') -->
+<scrap-toasts />
+
+<!-- Loader, état vide, page d'erreur, décor -->
+<scrap-spinner label="Chargement…" />
+<scrap-empty-state message="Aucun résultat"><button scrap-button>Créer</button></scrap-empty-state>
+<scrap-error-page code="404"><a scrap-button href="/">Retour</a></scrap-error-page>
+<scrap-splat name="burst" [size]="200" style="color: var(--scrap-copper)" />
 ```
 
 Utilitaires CSS globaux : `.scrap-grain` (texture bruit), `.scrap-torn-bottom`
 (bord déchiré), `.scrap-stamp` (badge tampon), `.scrap-rule` (séparateur pinceau),
-`.scrap-hero-title`, `.scrap-input`.
+`.scrap-hero-title`, `.scrap-input`, `.scrap-select`, `.scrap-checkbox`,
+`.scrap-radio`, `.scrap-choice`, `.scrap-table`, et animations `.scrap-stamp-in`
+(coup de tampon), `.scrap-reveal` (apparition au scroll), `.scrap-jitter` (tremblement au survol).
+
+Assets fournis (`node_modules/scrap-ui/assets/`) : `favicon.svg` et
+`manifest.webmanifest` (template — remplacer le nom du projet).
+
+## Publication npm (quand tu seras prêt)
+
+```bash
+ng build scrap-ui
+cd dist/scrap-ui
+npm publish --access restricted   # nécessite un compte npm / registre privé
+```
+
+En attendant, l'install par chemin local ou `npm link` fonctionne très bien.
 
 Tous les tokens sont des CSS custom properties `--scrap-*`
 (voir `projects/scrap-ui/src/styles/_tokens.scss`).

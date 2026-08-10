@@ -13,7 +13,24 @@ $scrap-copper: #956140; // brun cuivré
 $scrap-steel:  #718993; // bleu-gris
 $scrap-white:  #ffffff;
 
+// --- Couleurs sémantiques (dérivées de l'esprit de la palette) ---
+$scrap-rust:  #8a3324; // erreur — rouille
+$scrap-moss:  #5f7a3f; // succès — mousse
+$scrap-ochre: #b3822f; // avertissement — ocre
+
+@mixin semantic-tokens {
+  --scrap-danger: #{$scrap-rust};
+  --scrap-danger-ink: #{$scrap-white};
+  --scrap-success: #{$scrap-moss};
+  --scrap-success-ink: #{$scrap-white};
+  --scrap-warning: #{$scrap-ochre};
+  --scrap-warning-ink: #{$scrap-black};
+  --scrap-info: #{$scrap-steel};
+  --scrap-info-ink: #{$scrap-white};
+}
+
 @mixin light-tokens {
+  @include semantic-tokens;
   --scrap-bg: #{$scrap-white};
   --scrap-bg-alt: #f4efe9;            // blanc cassé chaud dérivé du cuivre
   --scrap-surface: #{$scrap-white};
@@ -32,6 +49,11 @@ $scrap-white:  #ffffff;
 }
 
 @mixin dark-tokens {
+  @include semantic-tokens;
+  // versions éclaircies pour rester lisibles sur fond sombre
+  --scrap-danger: #b0492f;
+  --scrap-success: #7d9c5a;
+  --scrap-warning: #cf9c45;
   --scrap-bg: #1a120b;                // brun quasi noir
   --scrap-bg-alt: #{$scrap-bark};
   --scrap-surface: #241910;

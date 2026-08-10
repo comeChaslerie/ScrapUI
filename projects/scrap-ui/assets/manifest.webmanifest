@@ -1,0 +1,11 @@
+{
+  "name": "REMPLACER — Nom du projet",
+  "short_name": "REMPLACER",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#322216",
+  "theme_color": "#322216",
+  "icons": [
+    { "src": "favicon.svg", "sizes": "any", "type": "image/svg+xml" }
+  ]
+}

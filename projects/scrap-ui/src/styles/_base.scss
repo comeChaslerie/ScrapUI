@@ -93,6 +93,157 @@ a {
   color: var(--scrap-accent);
 }
 
+// ============================================================
+// Animations signature
+// ============================================================
+
+// Apparition "coup de tampon" : arrive de face et claque sur la page.
+@keyframes scrap-stamp-in {
+  0%   { opacity: 0; transform: scale(1.7) rotate(4deg); }
+  55%  { opacity: 1; transform: scale(0.94) rotate(-2deg); }
+  75%  { transform: scale(1.03) rotate(-1deg); }
+  100% { opacity: 1; transform: scale(1) rotate(-1deg); }
+}
+.scrap-stamp-in {
+  animation: scrap-stamp-in 320ms cubic-bezier(0.2, 0.9, 0.3, 1.2) both;
+}
+
+// Reveal au scroll (scroll-driven animations ; sans effet sur les
+// navigateurs qui ne supportent pas — le contenu reste visible).
+@supports (animation-timeline: view()) {
+  .scrap-reveal {
+    animation: scrap-reveal-in linear both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 45%;
+  }
+  @keyframes scrap-reveal-in {
+    from { opacity: 0; transform: translateY(28px) rotate(0.5deg); }
+    to   { opacity: 1; transform: none; }
+  }
+}
+
+// Tremblement léger au survol (à poser sur un élément décoratif).
+@keyframes scrap-jitter {
+  0%, 100% { transform: translate(0, 0) rotate(0); }
+  25% { transform: translate(-1px, 1px) rotate(-0.4deg); }
+  50% { transform: translate(1px, -1px) rotate(0.4deg); }
+  75% { transform: translate(-1px, -1px) rotate(-0.2deg); }
+}
+.scrap-jitter:hover {
+  animation: scrap-jitter 180ms linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scrap-stamp-in, .scrap-reveal, .scrap-jitter:hover {
+    animation: none;
+  }
+}
+
+// ============================================================
+// Table
+// ============================================================
+.scrap-table {
+  width: 100%;
+  border-collapse: collapse;
+  border: var(--scrap-border-w) solid var(--scrap-border);
+  box-shadow: var(--scrap-shadow);
+  background: var(--scrap-surface);
+  font-size: var(--scrap-fs-small);
+
+  th {
+    font-family: var(--scrap-font-display);
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    text-align: left;
+    background: var(--scrap-ink-strong);
+    color: var(--scrap-bg);
+    padding: var(--scrap-space-2) var(--scrap-space-3);
+  }
+  td {
+    padding: var(--scrap-space-2) var(--scrap-space-3);
+    border-top: 1px solid var(--scrap-border-soft);
+  }
+  tbody tr:nth-child(even) { background: var(--scrap-bg-alt); }
+  tbody tr:hover { background: color-mix(in srgb, var(--scrap-copper) 14%, transparent); }
+}
+
+// ============================================================
+// Contrôles de formulaire natifs
+// ============================================================
+.scrap-select {
+  appearance: none;
+  font-family: var(--scrap-font-body);
+  font-size: var(--scrap-fs-body);
+  color: var(--scrap-ink);
+  background: var(--scrap-bg-alt);
+  border: var(--scrap-border-w) solid var(--scrap-border);
+  border-radius: var(--scrap-radius);
+  padding: 0.65em 2.4em 0.65em 0.9em;
+  cursor: pointer;
+  // chevron anguleux maison
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='10'%3E%3Cpath d='M1 1h12L7 9 1 1Z' fill='%23956140'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.8em center;
+}
+.scrap-select:focus {
+  outline: none;
+  box-shadow: var(--scrap-shadow);
+}
+
+// Checkbox « coche au marqueur » et radio « rivet »
+.scrap-checkbox, .scrap-radio {
+  appearance: none;
+  width: 1.35em;
+  height: 1.35em;
+  margin: 0;
+  flex: none;
+  border: var(--scrap-border-w) solid var(--scrap-border);
+  background: var(--scrap-bg-alt);
+  cursor: pointer;
+  display: inline-grid;
+  place-content: center;
+  vertical-align: middle;
+  transition: box-shadow var(--scrap-transition);
+}
+.scrap-checkbox { border-radius: var(--scrap-radius); transform: rotate(-2deg); }
+.scrap-radio { border-radius: 50%; }
+.scrap-checkbox:focus-visible, .scrap-radio:focus-visible {
+  outline: none;
+  box-shadow: var(--scrap-shadow);
+}
+.scrap-checkbox::before {
+  content: '';
+  width: 1em;
+  height: 1em;
+  transform: scale(0) rotate(8deg);
+  transition: transform 120ms cubic-bezier(0.2, 0.9, 0.3, 1.4);
+  background: var(--scrap-accent);
+  // coche irrégulière type marqueur
+  clip-path: polygon(14% 52%, 30% 40%, 44% 62%, 82% 8%, 98% 20%, 46% 96%, 4% 66%);
+}
+.scrap-checkbox:checked::before { transform: scale(1.15) rotate(8deg); }
+.scrap-radio::before {
+  content: '';
+  width: 0.6em;
+  height: 0.6em;
+  border-radius: 50%;
+  transform: scale(0);
+  transition: transform 120ms cubic-bezier(0.2, 0.9, 0.3, 1.4);
+  background: var(--scrap-accent);
+  box-shadow: inset 1px 1px 0 rgb(0 0 0 / 0.35); // effet rivet enfoncé
+}
+.scrap-radio:checked::before { transform: scale(1); }
+
+// Ligne label + contrôle
+.scrap-choice {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--scrap-space-2);
+  cursor: pointer;
+  font-size: var(--scrap-fs-body);
+}
+
 // Trait de séparation irrégulier (pinceau).
 .scrap-rule {
   border: 0;

@@ -1,0 +1,9 @@
+{
+  "$schema": "../../../node_modules/@angular-devkit/schematics/collection-schema.json",
+  "schematics": {
+    "ng-add": {
+      "description": "Branche le thème Scrap UI dans le projet (import SCSS + favicon).",
+      "factory": "./ng-add/index#ngAdd"
+    }
+  }
+}

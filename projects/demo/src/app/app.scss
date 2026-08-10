@@ -9,6 +9,14 @@ main {
 
 .hero {
   padding-top: var(--scrap-space-5);
+  position: relative;
+  .hero-splat {
+    position: absolute;
+    top: 0;
+    right: 4%;
+    color: var(--scrap-copper);
+    opacity: 0.18;
+  }
   .lede {
     max-width: 46ch;
     font-size: 1.1rem;
@@ -67,6 +75,20 @@ main {
   border: var(--scrap-border-w) solid var(--scrap-border-soft);
   color: var(--scrap-accent);
 }
+
+.badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--scrap-space-3);
+}
+
+.stack-row {
+  display: flex;
+  gap: var(--scrap-space-4);
+  flex-wrap: wrap;
+}
+
+#composants h3 { margin-top: var(--scrap-space-5); }
 
 .type-demo {
   margin: 0 0 var(--scrap-space-2);
