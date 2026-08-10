@@ -85,7 +85,18 @@ import {
 <scrap-empty-state message="Aucun résultat"><button scrap-button>Créer</button></scrap-empty-state>
 <scrap-error-page code="404"><a scrap-button href="/">Retour</a></scrap-error-page>
 <scrap-splat name="burst" [size]="200" style="color: var(--scrap-copper)" />
+
+<!-- Audio : forme d'onde cliquable, oscilloscope, VU-mètre (données 0..1) -->
+<scrap-wave-bars [data]="peaks" [progress]="progress()" (seek)="onSeek($event)" />
+<scrap-wave-line [data]="samples" />
+<scrap-vu-meter [level]="0.7" />
+<!-- Temps réel depuis Web Audio : mode "line" (oscilloscope) ou "bars" (spectre) -->
+<scrap-wave-live [analyser]="analyserNode" mode="line" />
 ```
+
+Curseurs personnalisés (classes globales à poser sur n'importe quelle zone) :
+`.scrap-cursor-cross`, `.scrap-cursor-wrench`, `.scrap-cursor-marker`,
+`.scrap-cursor-spray`, `.scrap-cursor-gear`.
 
 Utilitaires CSS globaux : `.scrap-grain` (texture bruit), `.scrap-torn-bottom`
 (bord déchiré), `.scrap-stamp` (badge tampon), `.scrap-rule` (séparateur pinceau),

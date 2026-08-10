@@ -17,3 +17,4 @@ export * from './lib/splat';
 export * from './lib/tabs';
 export * from './lib/theme-toggle';
 export * from './lib/toast';
+export * from './lib/waveform';

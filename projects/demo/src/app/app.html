@@ -121,6 +121,33 @@
     </scrap-tabs>
   </section>
 
+  <section id="audio" class="scrap-reveal">
+    <h2>Audio</h2>
+    <div class="grid">
+      <scrap-card title="Forme d'onde — clic pour seek">
+        <scrap-wave-bars [data]="peaks" [progress]="playProgress()" (seek)="playProgress.set($event)" />
+      </scrap-card>
+      <scrap-card title="Oscilloscope">
+        <scrap-wave-line [data]="oscillo()" />
+      </scrap-card>
+      <scrap-card title="VU-mètre">
+        <scrap-vu-meter [level]="vuLevel()" />
+      </scrap-card>
+    </div>
+  </section>
+
+  <section id="curseurs" class="scrap-reveal">
+    <h2>Curseurs</h2>
+    <div class="cursor-grid">
+      @for (c of cursors; track c.cls) {
+        <div class="cursor-zone" [class]="c.cls">
+          <code>.{{ c.cls }}</code>
+          <span>{{ c.label }} — survole-moi</span>
+        </div>
+      }
+    </div>
+  </section>
+
   <section id="typo" class="scrap-reveal">
     <h2>Typographie</h2>
     <scrap-card>

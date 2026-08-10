@@ -90,6 +90,23 @@ main {
 
 #composants h3 { margin-top: var(--scrap-space-5); }
 
+.cursor-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--scrap-space-3);
+}
+.cursor-zone {
+  display: flex;
+  flex-direction: column;
+  gap: var(--scrap-space-1);
+  padding: var(--scrap-space-4);
+  border: var(--scrap-border-w) dashed var(--scrap-border-soft);
+  text-align: center;
+  font-size: var(--scrap-fs-small);
+  span { color: var(--scrap-ink-muted); }
+  &:hover { border-color: var(--scrap-copper); border-style: solid; }
+}
+
 .type-demo {
   margin: 0 0 var(--scrap-space-2);
   &.display {

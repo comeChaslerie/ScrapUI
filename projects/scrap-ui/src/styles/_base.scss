@@ -94,6 +94,38 @@ a {
 }
 
 // ============================================================
+// Curseurs personnalisés
+// Data-URI SVG (les curseurs ne peuvent pas lire les CSS vars,
+// les couleurs de la charte sont donc codées en dur).
+// Chaque classe garde un curseur natif en repli.
+// ============================================================
+
+// Croix de visée anguleuse — zones de précision, canvas, découpe.
+.scrap-cursor-cross {
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Cg fill='%23956140'%3E%3Crect x='11' y='0' width='2' height='8'/%3E%3Crect x='11' y='16' width='2' height='8'/%3E%3Crect x='0' y='11' width='8' height='2'/%3E%3Crect x='16' y='11' width='8' height='2'/%3E%3C/g%3E%3Crect x='10' y='10' width='4' height='4' fill='%23322216'/%3E%3C/svg%3E") 12 12, crosshair;
+}
+
+// Clé à molette — actions d'édition, outillage, réglages.
+.scrap-cursor-wrench {
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='26' height='26'%3E%3Cpath fill='%23322216' stroke='%23956140' stroke-width='1.5' d='M22 6.5a5 5 0 0 1-6.7 4.7L7 19.5a2.4 2.4 0 0 1-3.4-3.4L11.8 8A5 5 0 0 1 18 1.6l-2.8 2.8 1.4 3 3-.1L22 6.5Z'/%3E%3C/svg%3E") 3 22, pointer;
+}
+
+// Marqueur — annotation, dessin, sélection de texte créative.
+.scrap-cursor-marker {
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='26' height='26'%3E%3Cpath fill='%23956140' d='M2 24l3-8 4 4-7 4Z'/%3E%3Cpath fill='%23322216' d='M6 15 17 4l5 5L11 20l-5-5Z'/%3E%3Cpath fill='%23718993' d='M17 4l3-3 5 5-3 3-5-5Z'/%3E%3C/svg%3E") 2 24, crosshair;
+}
+
+// Bombe de peinture — zones décoratives, mode grunge.
+.scrap-cursor-spray {
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='26' height='26'%3E%3Crect x='9' y='8' width='10' height='16' rx='1' fill='%23322216'/%3E%3Crect x='11' y='4' width='4' height='4' fill='%23718993'/%3E%3Cg fill='%23956140'%3E%3Ccircle cx='4' cy='4' r='1.6'/%3E%3Ccircle cx='7' cy='1.8' r='1.1'/%3E%3Ccircle cx='2' cy='8' r='1.2'/%3E%3Ccircle cx='6' cy='7' r='0.8'/%3E%3C/g%3E%3C/svg%3E") 4 4, pointer;
+}
+
+// Engrenage — éléments déplaçables, manipulation.
+.scrap-cursor-gear {
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Cpath fill='%23322216' stroke='%23956140' stroke-width='1.2' d='m13.8 2 .5 2.2 1.7.7 1.9-1.2 1.8 1.8-1.2 1.9.7 1.7 2.2.5v2.6l-2.2.5-.7 1.7 1.2 1.9-1.8 1.8-1.9-1.2-1.7.7-.5 2.2h-2.6l-.5-2.2-1.7-.7-1.9 1.2-1.8-1.8 1.2-1.9-.7-1.7L2 13.4v-2.6l2.2-.5.7-1.7-1.2-1.9 1.8-1.8 1.9 1.2 1.7-.7.5-2.2h2.6Z'/%3E%3Ccircle cx='12.5' cy='12' r='3' fill='%23956140'/%3E%3C/svg%3E") 12 12, grab;
+}
+
+// ============================================================
 // Animations signature
 // ============================================================
 
