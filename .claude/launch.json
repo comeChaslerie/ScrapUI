@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "scrap-ui-demo",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["ng", "serve", "demo", "--port", "4299"],
+      "port": 4299
+    }
+  ]
+}

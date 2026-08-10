@@ -1,0 +1,91 @@
+<scrap-header appName="Scrap UI" [links]="links">
+  <!-- Slot logo : chaque projet met le sien ici -->
+  <scrap-icon logo name="node" [size]="36" style="color: var(--scrap-copper)" />
+  <scrap-theme-toggle actions />
+</scrap-header>
+
+<main>
+  <section class="hero">
+    <span class="scrap-stamp">Direction artistique commune</span>
+    <h1 class="scrap-hero-title">Récup.<br />Brut.<br />Cohérent.</h1>
+    <p class="lede">
+      La base visuelle partagée de tous les projets : palette, typographies,
+      textures et composants Angular. Seul le logo change.
+    </p>
+    <div class="hero-actions">
+      <button scrap-button>
+        Démarrer <scrap-icon name="arrow" [size]="16" />
+      </button>
+      <button scrap-button variant="ghost">Voir la charte</button>
+    </div>
+  </section>
+
+  <hr class="scrap-rule" />
+
+  <section id="couleurs">
+    <h2>Palette</h2>
+    <div class="swatches">
+      @for (c of palette; track c.hex) {
+        <div class="swatch">
+          <div class="chip" [style.background]="c.hex"></div>
+          <strong>{{ c.name }}</strong>
+          <code>{{ c.hex }}</code>
+        </div>
+      }
+    </div>
+  </section>
+
+  <section id="composants">
+    <h2>Composants</h2>
+    <div class="grid">
+      <scrap-card title="Boutons">
+        <div class="stack">
+          <button scrap-button>Primaire</button>
+          <button scrap-button variant="secondary">Secondaire</button>
+          <button scrap-button variant="ghost">Fantôme</button>
+          <button scrap-button disabled>Désactivé</button>
+        </div>
+      </scrap-card>
+
+      <scrap-card title="Formulaire">
+        <form class="stack" (submit)="$event.preventDefault()">
+          <scrap-field label="Nom du projet" hint="Il rejoindra la casse.">
+            <input class="scrap-input" placeholder="ex. DataGlitchCore" />
+          </scrap-field>
+          <scrap-field label="Description">
+            <textarea class="scrap-input" rows="3" placeholder="Un moteur de destruction…"></textarea>
+          </scrap-field>
+          <button scrap-button variant="secondary">Envoyer</button>
+        </form>
+      </scrap-card>
+
+      <scrap-card title="Icônes">
+        <div class="icon-row">
+          @for (i of icons; track i) {
+            <span class="icon-cell" [title]="i"><scrap-icon [name]="i" [size]="26" /></span>
+          }
+        </div>
+      </scrap-card>
+    </div>
+  </section>
+
+  <section id="typo">
+    <h2>Typographie</h2>
+    <scrap-card>
+      <p class="type-demo display">Helvetica Black — titres tampon</p>
+      <p class="type-demo">Arial regular — corps de texte, lisible et sans chichis.</p>
+      <p class="type-demo"><strong>Arial bold — sous-titres et emphase.</strong></p>
+    </scrap-card>
+  </section>
+</main>
+
+<scrap-footer appName="Scrap UI">
+  <div>
+    <h3>Projets</h3>
+    <p>DataGlitchCore · Scrap Node · …</p>
+  </div>
+  <div>
+    <h3>Contact</h3>
+    <p>come.chaslerie.pro&#64;gmail.com</p>
+  </div>
+</scrap-footer>

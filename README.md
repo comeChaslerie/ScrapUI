@@ -1,59 +1,69 @@
-# ScrapUi
+# Scrap UI
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 22.1.3.
+Direction artistique commune à tous les projets, dérivée de la charte graphique
+Scrap Node (03/03/26). Librairie Angular : tokens, composants, layouts.
 
-## Development server
+**Règle d'or : la palette et les typos sont fixes. Seul le logo change d'un projet à l'autre.**
 
-To start a local development server, run:
+## Direction artistique
 
-```bash
-ng serve
-```
+| Élément | Valeur |
+|---|---|
+| Palette | `#000000` noir · `#322216` brun foncé · `#956140` cuivre · `#718993` bleu-gris · `#FFFFFF` blanc |
+| Titres | Helvetica 900, capitales, léger désaxage « tampon » |
+| Corps | Arial |
+| Style | Grunge/récup : grain, bords déchirés, ombres dures, tampons |
+| Thèmes | Clair et sombre (auto via OS, ou forcé par `data-scrap-theme` sur `<html>`) |
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
-
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-```bash
-ng generate component component-name
-```
-
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+## Utilisation dans un projet
 
 ```bash
-ng generate --help
+ng build scrap-ui
+npm install /chemin/vers/scrap-ui/dist/scrap-ui   # ou npm link, ou publication npm
 ```
 
-## Building
+Dans `styles.scss` du projet :
 
-To build the project run:
+```scss
+@use 'scrap-ui/styles/index';
+```
+
+Dans un composant :
+
+```ts
+import { ScrapButton, ScrapCard, ScrapField, ScrapHeader, ScrapFooter, ScrapIcon, ScrapThemeToggle } from 'scrap-ui';
+```
+
+```html
+<scrap-header appName="Mon Projet" [links]="links">
+  <img logo src="assets/logo-du-projet.svg" alt="" />  <!-- slot logo : propre à chaque projet -->
+  <scrap-theme-toggle actions />
+</scrap-header>
+
+<button scrap-button>Primaire</button>
+<button scrap-button variant="secondary">Secondaire</button>
+<button scrap-button variant="ghost">Fantôme</button>
+
+<scrap-card title="Titre">contenu…</scrap-card>
+
+<scrap-field label="Email" hint="optionnel">
+  <input class="scrap-input" type="email" />
+</scrap-field>
+
+<scrap-footer appName="Mon Projet">…</scrap-footer>
+```
+
+Utilitaires CSS globaux : `.scrap-grain` (texture bruit), `.scrap-torn-bottom`
+(bord déchiré), `.scrap-stamp` (badge tampon), `.scrap-rule` (séparateur pinceau),
+`.scrap-hero-title`, `.scrap-input`.
+
+Tous les tokens sont des CSS custom properties `--scrap-*`
+(voir `projects/scrap-ui/src/styles/_tokens.scss`).
+
+## Démo / vitrine
 
 ```bash
-ng build
+npx ng serve demo
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+→ http://localhost:4200 — montre palette, typos, composants et bascule clair/sombre.

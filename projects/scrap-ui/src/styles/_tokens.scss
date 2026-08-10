@@ -1,0 +1,99 @@
+// ============================================================
+// SCRAP UI — Design tokens
+// Palette issue de la charte graphique Scrap Node (03/03/26).
+// La palette est FIXE : identique sur tous les projets.
+// Seul le logo change d'un projet à l'autre.
+// ============================================================
+
+// --- Palette brute (ne pas utiliser directement dans les composants :
+//     passer par les tokens sémantiques ci-dessous) ---
+$scrap-black:  #000000;
+$scrap-bark:   #322216; // brun foncé
+$scrap-copper: #956140; // brun cuivré
+$scrap-steel:  #718993; // bleu-gris
+$scrap-white:  #ffffff;
+
+@mixin light-tokens {
+  --scrap-bg: #{$scrap-white};
+  --scrap-bg-alt: #f4efe9;            // blanc cassé chaud dérivé du cuivre
+  --scrap-surface: #{$scrap-white};
+  --scrap-ink: #{$scrap-bark};
+  --scrap-ink-strong: #{$scrap-black};
+  --scrap-ink-muted: #7a6a5c;
+  --scrap-accent: #{$scrap-copper};
+  --scrap-accent-ink: #{$scrap-white};
+  --scrap-secondary: #{$scrap-steel};
+  --scrap-secondary-ink: #{$scrap-white};
+  --scrap-border: #{$scrap-bark};
+  --scrap-border-soft: #d8cec4;
+  --scrap-shadow: 4px 4px 0 #{$scrap-bark};
+  --scrap-shadow-hover: 6px 6px 0 #{$scrap-bark};
+  --scrap-texture-opacity: 0.05;
+}
+
+@mixin dark-tokens {
+  --scrap-bg: #1a120b;                // brun quasi noir
+  --scrap-bg-alt: #{$scrap-bark};
+  --scrap-surface: #241910;
+  --scrap-ink: #efe6dc;
+  --scrap-ink-strong: #{$scrap-white};
+  --scrap-ink-muted: #a8968a;
+  --scrap-accent: #{$scrap-copper};
+  --scrap-accent-ink: #{$scrap-white};
+  --scrap-secondary: #{$scrap-steel};
+  --scrap-secondary-ink: #{$scrap-black};
+  --scrap-border: #efe6dc;
+  --scrap-border-soft: #4a3826;
+  --scrap-shadow: 4px 4px 0 #{$scrap-black};
+  --scrap-shadow-hover: 6px 6px 0 #{$scrap-black};
+  --scrap-texture-opacity: 0.09;
+}
+
+:root {
+  // Palette brute exposée en CSS custom properties
+  --scrap-black: #{$scrap-black};
+  --scrap-bark: #{$scrap-bark};
+  --scrap-copper: #{$scrap-copper};
+  --scrap-steel: #{$scrap-steel};
+  --scrap-white: #{$scrap-white};
+
+  // --- Typographie (charte : Helvetica titres, Arial corps) ---
+  --scrap-font-display: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --scrap-font-body: Arial, 'Helvetica Neue', Helvetica, sans-serif;
+  --scrap-fs-hero: clamp(2.5rem, 6vw, 4.5rem);
+  --scrap-fs-h1: clamp(2rem, 4vw, 3rem);
+  --scrap-fs-h2: clamp(1.5rem, 3vw, 2rem);
+  --scrap-fs-h3: 1.25rem;
+  --scrap-fs-body: 1rem;
+  --scrap-fs-small: 0.875rem;
+
+  // --- Espacements ---
+  --scrap-space-1: 0.25rem;
+  --scrap-space-2: 0.5rem;
+  --scrap-space-3: 1rem;
+  --scrap-space-4: 1.5rem;
+  --scrap-space-5: 2.5rem;
+  --scrap-space-6: 4rem;
+
+  // --- Divers ---
+  --scrap-radius: 2px;               // esprit brut : angles quasi vifs
+  --scrap-border-w: 2px;
+  --scrap-transition: 150ms cubic-bezier(0.2, 0.8, 0.3, 1);
+
+  @include light-tokens;
+}
+
+// Mode sombre : automatique via l'OS…
+@media (prefers-color-scheme: dark) {
+  :root:not([data-scrap-theme='light']) {
+    @include dark-tokens;
+  }
+}
+
+// …ou forcé via <html data-scrap-theme="dark|light">
+:root[data-scrap-theme='dark'] {
+  @include dark-tokens;
+}
+:root[data-scrap-theme='light'] {
+  @include light-tokens;
+}

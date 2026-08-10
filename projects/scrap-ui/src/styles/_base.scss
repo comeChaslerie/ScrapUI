@@ -1,0 +1,108 @@
+// ============================================================
+// SCRAP UI — Base : reset léger, typographie, utilitaires grunge
+// ============================================================
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--scrap-font-body);
+  font-size: var(--scrap-fs-body);
+  line-height: 1.6;
+  color: var(--scrap-ink);
+  background-color: var(--scrap-bg);
+  -webkit-font-smoothing: antialiased;
+}
+
+// --- Titres : esprit "tampon" (Helvetica très grasse, capitales serrées) ---
+h1, h2, h3, .scrap-display {
+  font-family: var(--scrap-font-display);
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+  color: var(--scrap-ink-strong);
+  margin: 0 0 var(--scrap-space-3);
+}
+
+h1 { font-size: var(--scrap-fs-h1); }
+h2 { font-size: var(--scrap-fs-h2); }
+h3 { font-size: var(--scrap-fs-h3); letter-spacing: 0.02em; }
+
+.scrap-hero-title {
+  font-size: var(--scrap-fs-hero);
+  // léger désaxage "tampon mal appliqué"
+  transform: rotate(-1deg);
+}
+
+a {
+  color: var(--scrap-accent);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+}
+
+::selection {
+  background: var(--scrap-copper);
+  color: var(--scrap-white);
+}
+
+// ============================================================
+// Utilitaires grunge
+// ============================================================
+
+// Grain : bruit SVG (feTurbulence) en overlay sur tout conteneur positionné.
+// Usage : <div class="scrap-grain">…</div>
+.scrap-grain {
+  position: relative;
+}
+.scrap-grain::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: var(--scrap-texture-opacity);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+// Bord déchiré (bas) : à poser sur une section pleine largeur.
+.scrap-torn-bottom {
+  clip-path: polygon(
+    0 0, 100% 0, 100% calc(100% - 14px), 96% 100%, 91% calc(100% - 10px),
+    85% calc(100% - 2px), 78% calc(100% - 12px), 70% calc(100% - 5px),
+    62% calc(100% - 14px), 53% calc(100% - 4px), 45% calc(100% - 11px),
+    37% calc(100% - 2px), 29% calc(100% - 13px), 21% calc(100% - 6px),
+    13% calc(100% - 12px), 6% calc(100% - 3px), 0 calc(100% - 10px)
+  );
+}
+
+// Tampon : encadré désaxé pour labels/badges.
+.scrap-stamp {
+  display: inline-block;
+  font-family: var(--scrap-font-display);
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: var(--scrap-fs-small);
+  padding: 0.2em 0.7em;
+  border: var(--scrap-border-w) solid currentColor;
+  transform: rotate(-2deg);
+  color: var(--scrap-accent);
+}
+
+// Trait de séparation irrégulier (pinceau).
+.scrap-rule {
+  border: 0;
+  height: 6px;
+  margin: var(--scrap-space-4) 0;
+  background: currentColor;
+  color: var(--scrap-border);
+  clip-path: polygon(
+    0 40%, 8% 10%, 20% 55%, 33% 20%, 47% 70%, 60% 15%,
+    72% 60%, 85% 25%, 100% 50%, 100% 80%, 84% 55%, 70% 95%,
+    55% 45%, 41% 100%, 28% 60%, 14% 90%, 0 70%
+  );
+}
