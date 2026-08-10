@@ -86,6 +86,11 @@ import {
 <scrap-error-page code="404"><a scrap-button href="/">Retour</a></scrap-error-page>
 <scrap-splat name="burst" [size]="200" style="color: var(--scrap-copper)" />
 
+<!-- Curseur de réglage : two-way binding, crans optionnels, icône projetée -->
+<scrap-slider [(value)]="volume" [step]="10" [ticks]="true">
+  <scrap-icon icon name="volume" />
+</scrap-slider>
+
 <!-- Audio : forme d'onde cliquable, oscilloscope, VU-mètre (données 0..1) -->
 <scrap-wave-bars [data]="peaks" [progress]="progress()" (seek)="onSeek($event)" />
 <scrap-wave-line [data]="samples" />

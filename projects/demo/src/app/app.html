@@ -136,6 +136,29 @@
     </div>
   </section>
 
+  <section id="reglages" class="scrap-reveal">
+    <h2>Réglages</h2>
+    <scrap-card title="Curseurs">
+      <div class="slider-stack">
+        <scrap-slider [(value)]="volumeFull">
+          <scrap-icon icon [name]="volumeIcon(volumeFull())" [size]="24" />
+        </scrap-slider>
+        <scrap-slider [(value)]="volumeMid">
+          <scrap-icon icon [name]="volumeIcon(volumeMid())" [size]="24" />
+        </scrap-slider>
+        <scrap-slider [(value)]="volumeOff">
+          <scrap-icon icon [name]="volumeIcon(volumeOff())" [size]="24" />
+        </scrap-slider>
+        <scrap-slider [(value)]="stepped" [step]="10" [ticks]="true">
+          <scrap-icon icon [name]="volumeIcon(stepped())" [size]="24" />
+        </scrap-slider>
+        <scrap-slider [value]="0" [ticks]="true" [disabled]="true">
+          <scrap-icon icon name="mute" [size]="24" />
+        </scrap-slider>
+      </div>
+    </scrap-card>
+  </section>
+
   <section id="curseurs" class="scrap-reveal">
     <h2>Curseurs</h2>
     <div class="cursor-grid">

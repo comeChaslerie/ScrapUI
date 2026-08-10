@@ -90,6 +90,12 @@ main {
 
 #composants h3 { margin-top: var(--scrap-space-5); }
 
+.slider-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--scrap-space-4);
+}
+
 .cursor-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));

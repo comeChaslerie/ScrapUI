@@ -19,6 +19,7 @@ import {
   ScrapToast,
   ScrapToasts,
   ScrapTone,
+  ScrapSlider,
   ScrapVuMeter,
   ScrapWaveBars,
   ScrapWaveLine,
@@ -30,7 +31,7 @@ import {
     ScrapBadge, ScrapButton, ScrapCard, ScrapEmptyState, ScrapErrorPage,
     ScrapField, ScrapFooter, ScrapHeader, ScrapIcon, ScrapModal,
     ScrapSpinner, ScrapSplat, ScrapTab, ScrapTabs, ScrapThemeToggle, ScrapToasts,
-    ScrapVuMeter, ScrapWaveBars, ScrapWaveLine,
+    ScrapSlider, ScrapVuMeter, ScrapWaveBars, ScrapWaveLine,
   ],
   templateUrl: './app.html',
   styleUrl: './app.scss',
@@ -70,6 +71,16 @@ export class App {
   readonly playProgress = signal(0.35);
   readonly oscillo = signal<number[]>([]);
   readonly vuLevel = signal(0);
+
+  // --- Démo sliders ---
+  readonly volumeFull = signal(100);
+  readonly volumeMid = signal(58);
+  readonly volumeOff = signal(0);
+  readonly stepped = signal(70);
+
+  volumeIcon(v: number): string {
+    return v === 0 ? 'mute' : v < 50 ? 'volume-low' : 'volume';
+  }
 
   readonly cursors = [
     { cls: 'scrap-cursor-cross', label: 'Croix de visée' },

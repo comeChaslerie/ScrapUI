@@ -13,6 +13,7 @@ export * from './lib/header';
 export * from './lib/icon';
 export * from './lib/modal';
 export * from './lib/spinner';
+export * from './lib/slider';
 export * from './lib/splat';
 export * from './lib/tabs';
 export * from './lib/theme-toggle';
