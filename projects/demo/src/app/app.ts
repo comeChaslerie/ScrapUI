@@ -23,7 +23,7 @@ import {
   ScrapVuMeter,
   ScrapWaveBars,
   ScrapWaveLine,
-} from 'scrap-ui';
+} from '@comechaslerie/scrap-ui';
 
 @Component({
   selector: 'app-root',

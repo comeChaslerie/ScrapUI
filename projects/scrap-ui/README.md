@@ -1,64 +1,60 @@
-# ScrapUi
+# @comechaslerie/scrap-ui
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 22.1.0.
+Direction artistique commune aux projets **Scrap** — tokens CSS, composants et layouts
+Angular 22 (standalone + signals). Charte grunge figée dérivée de Scrap Node.
 
-## Code scaffolding
+> **Règle d'or : la palette et les typos sont fixes. Seul le logo change d'un projet à l'autre.**
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+## Installation
 
-```bash
-ng generate component component-name
+Le paquet vit sur GitHub Packages, qui exige un token **même en lecture**. Dans le projet
+consommateur, un `.npmrc` versionné :
+
+```ini
+@comechaslerie:registry=https://npm.pkg.github.com
+//npm.pkg.github.com/:_authToken=${GITHUB_PACKAGES_TOKEN}
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+et un PAT classique avec la portée `read:packages` exposé en `GITHUB_PACKAGES_TOKEN` :
 
 ```bash
-ng generate --help
+npm install @comechaslerie/scrap-ui
+ng add @comechaslerie/scrap-ui    # branche le thème dans styles.scss
 ```
 
-## Building
+## Utilisation
 
-To build the library, run:
+```scss
+// styles.scss
+@use '@comechaslerie/scrap-ui/styles/index';
+```
+
+```ts
+import { ScrapButton, ScrapCard, ScrapHeader } from '@comechaslerie/scrap-ui';
+```
+
+Thème clair/sombre automatique (OS), forçable via `data-scrap-theme` sur `<html>`.
+Tous les tokens sont des custom properties `--scrap-*`.
+
+## Prérequis côté consommateur
+
+La lib est distribuée en compilation partielle Angular. Dans `angular.json`, deux réglages
+évitent un `NG0203` (deux instances d'Angular chargées) :
+
+```jsonc
+"preserveSymlinks": true,
+"prebundle": { "exclude": ["@comechaslerie/scrap-ui"] }
+```
+
+## Développement
 
 ```bash
-ng build scrap-ui
+ng build scrap-ui        # → dist/scrap-ui
+ng serve demo            # vitrine de tous les composants
+ng test scrap-ui         # vitest
 ```
 
-This command will compile your project, and the build artifacts will be placed in the `dist/` directory.
+Publication : voir [le README racine](../../README.md#publier-une-version) — un tag `vX.Y.Z`
+déclenche le workflow `release`.
 
-### Publishing the Library
-
-Once the project is built, you can publish your library by following these steps:
-
-1. Navigate to the `dist` directory:
-
-   ```bash
-   cd dist/scrap-ui
-   ```
-
-2. Run the `npm publish` command to publish your library to the npm registry:
-   ```bash
-   npm publish
-   ```
-
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+Composants et utilitaires CSS sont catalogués dans le [README racine](../../README.md).

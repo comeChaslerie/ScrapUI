@@ -7,45 +7,72 @@ Scrap Node (03/03/26). Librairie Angular : tokens, composants, layouts.
 
 ## Direction artistique
 
-| Élément | Valeur |
-|---|---|
-| Palette | `#000000` noir · `#322216` brun foncé · `#956140` cuivre · `#718993` bleu-gris · `#FFFFFF` blanc |
-| Titres | Helvetica 900, capitales, léger désaxage « tampon » |
-| Corps | Arial |
-| Style | Grunge/récup : grain, bords déchirés, ombres dures, tampons, éclaboussures |
+| Élément     | Valeur                                                                                               |
+| ----------- | ---------------------------------------------------------------------------------------------------- |
+| Palette     | `#000000` noir · `#322216` brun foncé · `#956140` cuivre · `#718993` bleu-gris · `#FFFFFF` blanc     |
+| Titres      | Helvetica 900, capitales, léger désaxage « tampon »                                                  |
+| Corps       | Arial                                                                                                |
+| Style       | Grunge/récup : grain, bords déchirés, ombres dures, tampons, éclaboussures                           |
 | Sémantiques | erreur `rouille #8a3324` · succès `mousse #5f7a3f` · avertissement `ocre #b3822f` · info `bleu-gris` |
-| Thèmes | Clair et sombre (auto via OS, ou forcé par `data-scrap-theme` sur `<html>`) |
+| Thèmes      | Clair et sombre (auto via OS, ou forcé par `data-scrap-theme` sur `<html>`)                          |
 
 ## Utilisation dans un projet
 
+La lib est publiée sur **GitHub Packages** sous `@comechaslerie/scrap-ui`. GitHub
+Packages exige un token **même en lecture** : le projet consommateur a donc besoin d'un
+`.npmrc` routant le scope, et d'un PAT classique avec la portée `read:packages`.
+
+`.npmrc` du projet consommateur (versionné, sans le token) :
+
+```ini
+@comechaslerie:registry=https://npm.pkg.github.com
+//npm.pkg.github.com/:_authToken=${GITHUB_PACKAGES_TOKEN}
+```
+
+Puis, avec `GITHUB_PACKAGES_TOKEN` dans l'environnement (shell, CI, `--build-arg` Docker) :
+
 ```bash
-ng build scrap-ui
-npm install /chemin/vers/scrap-ui/dist/scrap-ui   # ou npm link, ou publication npm
+npm install @comechaslerie/scrap-ui
 ```
 
 Dans `styles.scss` du projet :
 
 ```scss
-@use 'scrap-ui/styles/index';
+@use '@comechaslerie/scrap-ui/styles/index';
 ```
 
 Dans un composant :
 
-Ou en une commande une fois la lib installée : `ng add scrap-ui` (ajoute l'import du thème dans styles.scss).
+Ou en une commande une fois la lib installée : `ng add @comechaslerie/scrap-ui` (ajoute l'import du thème dans styles.scss).
 
 Dans un composant :
 
 ```ts
 import {
-  ScrapBadge, ScrapButton, ScrapCard, ScrapEmptyState, ScrapErrorPage,
-  ScrapField, ScrapFooter, ScrapHeader, ScrapIcon, ScrapModal, ScrapSpinner,
-  ScrapSplat, ScrapTab, ScrapTabs, ScrapThemeToggle, ScrapToast, ScrapToasts,
-} from 'scrap-ui';
+  ScrapBadge,
+  ScrapButton,
+  ScrapCard,
+  ScrapEmptyState,
+  ScrapErrorPage,
+  ScrapField,
+  ScrapFooter,
+  ScrapHeader,
+  ScrapIcon,
+  ScrapModal,
+  ScrapSpinner,
+  ScrapSplat,
+  ScrapTab,
+  ScrapTabs,
+  ScrapThemeToggle,
+  ScrapToast,
+  ScrapToasts,
+} from '@comechaslerie/scrap-ui';
 ```
 
 ```html
 <scrap-header appName="Mon Projet" [links]="links">
-  <img logo src="assets/logo-du-projet.svg" alt="" />  <!-- slot logo : propre à chaque projet -->
+  <img logo src="assets/logo-du-projet.svg" alt="" />
+  <!-- slot logo : propre à chaque projet -->
   <scrap-theme-toggle actions />
 </scrap-header>
 
@@ -109,18 +136,32 @@ Utilitaires CSS globaux : `.scrap-grain` (texture bruit), `.scrap-torn-bottom`
 `.scrap-radio`, `.scrap-choice`, `.scrap-table`, et animations `.scrap-stamp-in`
 (coup de tampon), `.scrap-reveal` (apparition au scroll), `.scrap-jitter` (tremblement au survol).
 
-Assets fournis (`node_modules/scrap-ui/assets/`) : `favicon.svg` et
+Assets fournis (`node_modules/@comechaslerie/scrap-ui/assets/`) : `favicon.svg` et
 `manifest.webmanifest` (template — remplacer le nom du projet).
 
-## Publication npm (quand tu seras prêt)
+## Publier une version
+
+Le tag est le déclencheur : `.github/workflows/release.yml` construit la lib et la publie
+sur GitHub Packages avec le `GITHUB_TOKEN` du runner — aucun PAT à stocker pour publier.
 
 ```bash
-ng build scrap-ui
-cd dist/scrap-ui
-npm publish --access restricted   # nécessite un compte npm / registre privé
+# 1. bumper la version de la lib (c'est elle qui compte, pas celle de la racine)
+npm version --no-git-tag-version 0.2.0 --prefix projects/scrap-ui
+git commit -am "scrap-ui 0.2.0"
+
+# 2. taguer : le workflow refuse un tag qui ne correspond pas à projects/scrap-ui/package.json
+git tag v0.2.0 && git push origin main --tags
 ```
 
-En attendant, l'install par chemin local ou `npm link` fonctionne très bien.
+Pour un essai en local (`npm publish` depuis `dist/scrap-ui`), il faut un PAT avec
+`write:packages` — le workflow évite ce détour.
+
+### Développer contre la lib sans publier
+
+Le `paths` du `tsconfig.json` racine mappe déjà `@comechaslerie/scrap-ui` → `dist/scrap-ui` :
+la démo consomme la lib construite sans passer par npm. Pour un projet externe, `npm link`
+ou une dépendance `file:` vers `dist/scrap-ui` reste valable (avec `preserveSymlinks: true`
+et `prebundle.exclude` dans son `angular.json`).
 
 Tous les tokens sont des CSS custom properties `--scrap-*`
 (voir `projects/scrap-ui/src/styles/_tokens.scss`).

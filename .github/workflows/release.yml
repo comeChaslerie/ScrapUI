@@ -1,0 +1,46 @@
+# Publication de @comechaslerie/scrap-ui sur GitHub Packages, déclenchée par un tag vX.Y.Z.
+# GITHUB_TOKEN suffit (packages: write) : aucun PAT à stocker pour publier.
+name: release
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          registry-url: https://npm.pkg.github.com
+          scope: '@comechaslerie'
+
+      - run: npm ci
+
+      # Le tag est la source de vérité de la version : un décalage avec package.json
+      # produirait une release dont le numéro ne veut rien dire.
+      - name: Vérifier que le tag correspond à la version de la lib
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          TAG="${GITHUB_REF_NAME#v}"
+          PKG=$(node -p "require('./projects/scrap-ui/package.json').version")
+          if [ "$TAG" != "$PKG" ]; then
+            echo "::error::tag v$TAG ≠ package.json $PKG"
+            exit 1
+          fi
+
+      - run: npx ng build scrap-ui
+
+      - name: Publier
+        working-directory: dist/scrap-ui
+        run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

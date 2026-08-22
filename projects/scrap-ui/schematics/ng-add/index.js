@@ -6,7 +6,7 @@ function ngAdd() {
   return (tree, context) => {
     const candidates = ['src/styles.scss', 'src/styles.css'];
     const stylesPath = candidates.find((p) => tree.exists(p));
-    const importLine = "@use 'scrap-ui/styles/index';\n";
+    const importLine = "@use '@comechaslerie/scrap-ui/styles/index';\n";
 
     if (!stylesPath) {
       context.logger.warn(
@@ -27,7 +27,7 @@ function ngAdd() {
       context.logger.info(`✔ Thème Scrap UI importé dans ${stylesPath}`);
     }
     context.logger.info(
-      '→ Favicon et manifest de la charte : node_modules/scrap-ui/assets/ (favicon.svg, manifest.webmanifest)',
+      '→ Favicon et manifest de la charte : node_modules/@comechaslerie/scrap-ui/assets/ (favicon.svg, manifest.webmanifest)',
     );
     return tree;
   };

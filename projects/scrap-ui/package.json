@@ -1,9 +1,16 @@
 {
-  "name": "scrap-ui",
+  "name": "@comechaslerie/scrap-ui",
   "version": "0.1.0",
   "description": "Direction artistique commune — tokens, composants et layouts Angular (charte Scrap Node)",
   "author": "comeChaslerie",
   "license": "UNLICENSED",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/comeChaslerie/ScrapUI.git"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
   "schematics": "./schematics/collection.json",
   "peerDependencies": {
     "@angular/common": "^22.1.0",
