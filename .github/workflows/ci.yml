@@ -1,0 +1,136 @@
+# Vérification de chaque poussée et de chaque PR.
+#
+# Le workflow `release.yml` ne se déclenche que sur un tag : sans ce
+# fichier-ci, rien ne garantit qu'un commit compile, passe le lint ou les
+# tests avant d'atterrir sur `main`.
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  # On annule les exécutions superposées sur une branche de travail, jamais sur
+  # `main` : un push rapide y annulerait un déploiement Pages en cours, qui
+  # laisserait le site dans un état intermédiaire.
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+jobs:
+  # --- Vérifications statiques et tests unitaires -----------------------
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Lint (ESLint — TypeScript et gabarits)
+        run: npm run lint
+
+      - name: Format (Prettier)
+        run: npm run format:check
+
+      - name: Construire la lib
+        run: npm run build
+
+      - name: Tests unitaires de la lib
+        run: npm run test:lib
+
+      - name: Tests unitaires de la démo
+        run: npm run test:demo
+
+      - name: Tests du schematic ng-add
+        run: npm run test:schematics
+
+      - name: Construire la démo
+        run: npm run build:demo
+
+  # --- Régression visuelle ---------------------------------------------
+  # Dans le conteneur officiel Playwright : c'est la seule façon d'obtenir
+  # le même rendu de texte que les références versionnées sous `linux/`.
+  visual:
+    runs-on: ubuntu-latest
+    container:
+      image: mcr.microsoft.com/playwright:v1.62.1-noble
+    steps:
+      - uses: actions/checkout@v4
+
+      # Pas de setup-node ici : l'image Playwright embarque déjà Node et les
+      # navigateurs. En superposer un autre expose à des modules natifs
+      # recompilés pour la mauvaise version.
+      - run: npm ci
+
+      - name: Construire la lib
+        run: npm run build
+
+      # Les références vivent sous e2e/__screenshots__/linux/. Si ce dossier
+      # est absent, ce job échoue : c'est voulu. Régénérez-les depuis un poste
+      # de développement avec `npm run visual:update:ci`, puis commitez-les.
+      - name: Régression visuelle
+        run: npx playwright test
+
+      - name: Publier le rapport en cas d'écart
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 14
+
+  # --- Vitrine publiée sur GitHub Pages ---------------------------------
+  pages:
+    if: github.ref == 'refs/heads/main'
+    # La vitrine ne se publie que si le rendu est conforme aux références :
+    # elle sert de documentation, un composant qui a dérivé n'y a pas sa place.
+    needs: [check, visual]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    # Groupe dédié, sans annulation : deux déploiements Pages concurrents se
+    # marcheraient dessus.
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+      - run: npm run build
+
+      # Pages sert le site depuis /<dépôt>/ : sans --base-href, tous les
+      # chemins absolus de l'application pointeraient à côté.
+      - name: Construire la vitrine
+        run: npx ng build demo --base-href "/${{ github.event.repository.name }}/"
+
+      # Sans ce fichier, Pages passe le site à Jekyll, qui ignore les
+      # dossiers commençant par un tiret bas.
+      - run: touch dist/demo/browser/.nojekyll
+
+      # Repli SPA : Pages n'a pas de réécriture d'URL, la 404 fait office
+      # de point d'entrée pour les routes profondes (/boutons, /onglets…).
+      - run: cp dist/demo/browser/index.html dist/demo/browser/404.html
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist/demo/browser
+      - id: deploy
+        uses: actions/deploy-pages@v4
