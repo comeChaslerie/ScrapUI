@@ -1,5 +1,11 @@
 # Régénère les références de régression visuelle Linux.
 #
+# ATTENTION — GitHub n'expose un workflow `workflow_dispatch` que s'il existe
+# sur la branche par défaut, même en passant `--ref`. Ce fichier n'est donc
+# utilisable qu'une fois fusionné sur `main`. Pour le tout premier amorçage,
+# récupérer l'artefact `visual-baselines-linux` que le job `visual` de `ci.yml`
+# publie lorsqu'il échoue faute de références.
+#
 # À déclencher à la main depuis l'onglet Actions, ou en ligne de commande :
 #
 #   gh workflow run visual-baselines.yml

@@ -85,6 +85,20 @@ jobs:
           path: playwright-report/
           retention-days: 14
 
+      # Playwright écrit la capture attendue quand elle n'existe pas encore
+      # (« A snapshot doesn't exist at …, writing actual »). On la publie :
+      # c'est ce qui permet d'amorcer les références Linux depuis une branche,
+      # sans quoi il faudrait que visual-baselines.yml soit déjà sur la branche
+      # par défaut pour être déclenchable — un problème d'œuf et de poule.
+      - name: Publier les références produites
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: visual-baselines-linux
+          path: e2e/__screenshots__/linux/
+          retention-days: 14
+          if-no-files-found: ignore
+
   # --- Vitrine publiée sur GitHub Pages ---------------------------------
   pages:
     if: github.ref == 'refs/heads/main'
