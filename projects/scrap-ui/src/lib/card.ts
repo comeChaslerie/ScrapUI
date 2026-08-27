@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 
 /**
  * Carte Scrap : plaque bordée avec ombre dure et grain,
@@ -6,6 +6,7 @@ import { Component, input } from '@angular/core';
  */
 @Component({
   selector: 'scrap-card',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     @if (title()) {
       <div class="card-head">

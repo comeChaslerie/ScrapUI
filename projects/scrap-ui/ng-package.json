@@ -5,8 +5,30 @@
     "entryFile": "src/public-api.ts"
   },
   "assets": [
-    { "input": "src/styles", "glob": "**/*.scss", "output": "styles" },
-    { "input": "assets", "glob": "**/*", "output": "assets" },
-    { "input": "schematics", "glob": "**/*", "output": "schematics" }
+    {
+      "input": "src/styles",
+      "glob": "**/*.scss",
+      "output": "styles"
+    },
+    {
+      "input": "assets",
+      "glob": "**/*",
+      "output": "assets"
+    },
+    {
+      "input": "schematics",
+      "glob": "**/*",
+      "output": "schematics"
+    },
+    {
+      "input": ".",
+      "glob": "LICENSE",
+      "output": "."
+    },
+    {
+      "input": ".",
+      "glob": "CHANGELOG.md",
+      "output": "."
+    }
   ]
 }

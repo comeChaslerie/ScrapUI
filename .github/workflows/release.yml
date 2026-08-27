@@ -37,6 +37,12 @@ jobs:
             exit 1
           fi
 
+      # Un tag ne doit jamais publier ce qui ne passe pas la CI : le tag est
+      # posé sur un commit, mais rien ne garantit que la CI a tourné dessus.
+      - run: npm run lint
+      - run: npm run test:lib
+      - run: npm run test:schematics
+
       - run: npx ng build scrap-ui
 
       - name: Publier

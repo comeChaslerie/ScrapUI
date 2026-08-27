@@ -1,4 +1,6 @@
-import { Component, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+
+export type ScrapButtonVariant = 'primary' | 'secondary' | 'ghost';
 
 /**
  * Bouton Scrap : bloc massif, ombre portée dure, enfoncement au clic.
@@ -6,9 +8,15 @@ import { Component, input } from '@angular/core';
  */
 @Component({
   selector: 'button[scrap-button], a[scrap-button]',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `<ng-content />`,
   host: {
-    '[class]': '"scrap-btn scrap-btn--" + variant()',
+    // Classes posées une par une : un binding `[class]` global écraserait
+    // les classes que le consommateur pose lui-même sur l'élément.
+    class: 'scrap-btn',
+    '[class.scrap-btn--primary]': 'variant() === "primary"',
+    '[class.scrap-btn--secondary]': 'variant() === "secondary"',
+    '[class.scrap-btn--ghost]': 'variant() === "ghost"',
   },
   styles: `
     :host {
@@ -60,8 +68,16 @@ import { Component, input } from '@angular/core';
       background: transparent;
       color: var(--scrap-ink-strong);
     }
+    @media (prefers-reduced-motion: reduce) {
+      :host,
+      :host(:hover),
+      :host(:active) {
+        transform: none;
+        transition: none;
+      }
+    }
   `,
 })
 export class ScrapButton {
-  readonly variant = input<'primary' | 'secondary' | 'ghost'>('primary');
+  readonly variant = input<ScrapButtonVariant>('primary');
 }

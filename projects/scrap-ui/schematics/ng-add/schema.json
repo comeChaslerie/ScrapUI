@@ -1,0 +1,16 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "ScrapUiNgAdd",
+  "title": "Brancher le thème Scrap UI",
+  "type": "object",
+  "properties": {
+    "project": {
+      "type": "string",
+      "description": "Projet du workspace à équiper. Par défaut, le projet par défaut d'angular.json.",
+      "$default": {
+        "$source": "projectName"
+      }
+    }
+  },
+  "additionalProperties": false
+}

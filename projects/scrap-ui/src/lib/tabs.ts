@@ -1,34 +1,100 @@
-import { Component, contentChildren, effect, input, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  computed,
+  contentChildren,
+  forwardRef,
+  inject,
+  input,
+  signal,
+  viewChildren,
+} from '@angular/core';
+import { ScrapIdGenerator } from './id';
 
-/** Un onglet : <scrap-tab label="Détails">contenu</scrap-tab> */
+/** Un onglet : `<scrap-tab label="Détails">contenu</scrap-tab>` */
 @Component({
   selector: 'scrap-tab',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     @if (active()) {
       <div class="scrap-stamp-in"><ng-content /></div>
     }
   `,
-  styles: `:host { display: block; }`,
+  host: {
+    role: 'tabpanel',
+    '[id]': 'panelId',
+    '[attr.aria-labelledby]': 'tabId',
+    '[attr.hidden]': 'active() ? null : ""',
+    '[attr.tabindex]': 'active() ? 0 : null',
+  },
+  styles: `
+    :host {
+      display: block;
+    }
+    /* La règle [hidden] { display: none } vient de la feuille du navigateur,
+       qu'un display posé par l'auteur écrase. Sans cette ligne, les panneaux
+       inactifs restent exposés comme tabpanel aux lecteurs d'écran. */
+    :host([hidden]) {
+      display: none;
+    }
+    :host(:focus-visible) {
+      outline: 3px dashed var(--scrap-secondary);
+      outline-offset: 3px;
+    }
+  `,
 })
 export class ScrapTab {
   readonly label = input.required<string>();
-  readonly active = signal(false);
+
+  private readonly ids = inject(ScrapIdGenerator);
+  readonly panelId = this.ids.next('scrap-tabpanel');
+  readonly tabId = `${this.panelId}-tab`;
+
+  private readonly parent = inject(
+    forwardRef(() => ScrapTabs),
+    { optional: true },
+  );
+
+  /** Sans parent (onglet utilisé seul), le contenu reste visible. */
+  readonly active = computed(() => {
+    const parent = this.parent;
+    if (!parent) return true;
+    return parent.tabs().indexOf(this) === parent.selectedIndex();
+  });
 }
 
 /**
  * Onglets façon étiquettes de classeur métallique.
- * <scrap-tabs><scrap-tab label="A">…</scrap-tab>…</scrap-tabs>
+ *
+ * ```html
+ * <scrap-tabs label="Fiche pièce">
+ *   <scrap-tab label="Détails">…</scrap-tab>
+ *   <scrap-tab label="Notes">…</scrap-tab>
+ * </scrap-tabs>
+ * ```
+ *
+ * Navigation clavier conforme au pattern ARIA « tabs » : flèches
+ * gauche/droite, Origine/Fin, et `tabindex` mobile sur l'onglet actif.
  */
 @Component({
   selector: 'scrap-tabs',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div role="tablist" class="rail">
-      @for (tab of tabs(); track tab; let i = $index) {
+    <!-- Le keydown est délégué : ce sont les boutons enfants qui portent le
+         focus, la barre elle-même ne doit pas entrer dans l'ordre de tabulation. -->
+    <!-- eslint-disable-next-line @angular-eslint/template/interactive-supports-focus -->
+    <div role="tablist" class="rail" [attr.aria-label]="label()" (keydown)="onKeydown($event)">
+      @for (tab of tabs(); track tab.panelId; let i = $index) {
         <button
+          #tabButton
           role="tab"
           type="button"
-          [attr.aria-selected]="tab.active()"
-          [class.on]="tab.active()"
+          [id]="tab.tabId"
+          [attr.aria-selected]="i === selectedIndex()"
+          [attr.aria-controls]="tab.panelId"
+          [attr.tabindex]="i === selectedIndex() ? 0 : -1"
+          [class.on]="i === selectedIndex()"
           (click)="select(i)"
         >
           {{ tab.label() }}
@@ -40,7 +106,9 @@ export class ScrapTab {
     </div>
   `,
   styles: `
-    :host { display: block; }
+    :host {
+      display: block;
+    }
     .rail {
       display: flex;
       gap: var(--scrap-space-2);
@@ -61,9 +129,13 @@ export class ScrapTab {
       border-radius: var(--scrap-radius) var(--scrap-radius) 0 0;
       cursor: pointer;
       transform: translateY(2px);
-      transition: transform var(--scrap-transition), background var(--scrap-transition);
+      transition:
+        transform var(--scrap-transition),
+        background var(--scrap-transition);
     }
-    button:hover { color: var(--scrap-ink); }
+    button:hover {
+      color: var(--scrap-ink);
+    }
     button.on {
       background: var(--scrap-surface);
       color: var(--scrap-ink-strong);
@@ -81,22 +153,60 @@ export class ScrapTab {
       box-shadow: var(--scrap-shadow);
       padding: var(--scrap-space-4);
     }
+    @media (prefers-reduced-motion: reduce) {
+      button {
+        transition: none;
+      }
+    }
   `,
 })
 export class ScrapTabs {
-  readonly tabs = contentChildren(ScrapTab);
+  /** Étiquette du groupe d'onglets, annoncée par les lecteurs d'écran. */
+  readonly label = input<string>('Onglets');
 
-  constructor() {
-    // Active le premier onglet dès que la liste est connue.
-    effect(() => {
-      const list = this.tabs();
-      if (list.length && !list.some((t) => t.active())) {
-        list[0].active.set(true);
-      }
-    });
-  }
+  readonly tabs = contentChildren(ScrapTab);
+  private readonly tabButtons = viewChildren<ElementRef<HTMLButtonElement>>('tabButton');
+
+  private readonly requested = signal(0);
+
+  /**
+   * Index actif, borné à la liste réelle : plus besoin d'écrire dans un
+   * signal depuis un `effect` pour activer le premier onglet.
+   */
+  readonly selectedIndex = computed(() => {
+    const count = this.tabs().length;
+    if (!count) return 0;
+    return Math.max(0, Math.min(count - 1, this.requested()));
+  });
 
   select(index: number): void {
-    this.tabs().forEach((t, i) => t.active.set(i === index));
+    this.requested.set(index);
+  }
+
+  protected onKeydown(event: KeyboardEvent): void {
+    const count = this.tabs().length;
+    if (!count) return;
+
+    const current = this.selectedIndex();
+    let next: number;
+    switch (event.key) {
+      case 'ArrowRight':
+        next = (current + 1) % count;
+        break;
+      case 'ArrowLeft':
+        next = (current - 1 + count) % count;
+        break;
+      case 'Home':
+        next = 0;
+        break;
+      case 'End':
+        next = count - 1;
+        break;
+      default:
+        return;
+    }
+    event.preventDefault();
+    this.select(next);
+    this.tabButtons()[next]?.nativeElement.focus();
   }
 }

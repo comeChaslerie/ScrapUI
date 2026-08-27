@@ -1,6 +1,9 @@
 import {
+  ChangeDetectionStrategy,
   Component,
+  DOCUMENT,
   DestroyRef,
+  PLATFORM_ID,
   computed,
   effect,
   inject,
@@ -8,6 +11,7 @@ import {
   output,
   signal,
 } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 
 // ============================================================
 // Visualisation audio — modules composables :
@@ -21,20 +25,33 @@ import {
 
 const VIEW_W = 100;
 const VIEW_H = 40;
+/** Pas de déplacement au clavier, en fraction de la durée totale. */
+const KEY_STEP = 0.05;
 
 /**
  * Forme d'onde en barres façon planches de récup, avec position de
- * lecture. Un clic émet le ratio 0..1 pour le seek.
+ * lecture. Un clic — ou les flèches du clavier — émet le ratio 0..1.
  *
+ * ```html
  * <scrap-wave-bars [data]="peaks" [progress]="0.4" (seek)="onSeek($event)" />
+ * ```
  */
 @Component({
   selector: 'scrap-wave-bars',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <svg
       [attr.viewBox]="'0 0 ' + w + ' ' + h"
       preserveAspectRatio="none"
+      role="slider"
+      tabindex="0"
+      [attr.aria-label]="label()"
+      aria-valuemin="0"
+      aria-valuemax="1"
+      [attr.aria-valuenow]="progress() ?? 0"
+      [attr.aria-valuetext]="valueText()"
       (click)="onClick($event)"
+      (keydown)="onKeydown($event)"
     >
       @for (bar of bars(); track bar.i) {
         <rect
@@ -46,13 +63,30 @@ const VIEW_H = 40;
         />
       }
       @if (progress() !== undefined) {
-        <rect [attr.x]="w * progress()! - 0.35" y="0" width="0.7" [attr.height]="h" fill="var(--scrap-ink-strong)" />
+        <rect
+          [attr.x]="w * progress()! - 0.35"
+          y="0"
+          width="0.7"
+          [attr.height]="h"
+          fill="var(--scrap-ink-strong)"
+        />
       }
     </svg>
   `,
   styles: `
-    :host { display: block; height: 72px; }
-    svg { width: 100%; height: 100%; cursor: pointer; }
+    :host {
+      display: block;
+      height: 72px;
+    }
+    svg {
+      width: 100%;
+      height: 100%;
+      cursor: pointer;
+    }
+    svg:focus-visible {
+      outline: 3px dashed var(--scrap-secondary);
+      outline-offset: 3px;
+    }
   `,
 })
 export class ScrapWaveBars {
@@ -60,10 +94,17 @@ export class ScrapWaveBars {
   readonly data = input.required<number[]>();
   /** Position de lecture 0..1 (optionnelle). */
   readonly progress = input<number>();
+  /** Étiquette accessible de la piste. */
+  readonly label = input('Position de lecture');
   readonly seek = output<number>();
 
   protected readonly w = VIEW_W;
   protected readonly h = VIEW_H;
+
+  protected readonly valueText = computed(() => {
+    const p = this.progress();
+    return p === undefined ? null : `${Math.round(p * 100)} %`;
+  });
 
   protected readonly bars = computed(() => {
     const d = this.data();
@@ -87,19 +128,57 @@ export class ScrapWaveBars {
 
   protected onClick(event: MouseEvent): void {
     const rect = (event.currentTarget as SVGSVGElement).getBoundingClientRect();
-    this.seek.emit(Math.max(0, Math.min(1, (event.clientX - rect.left) / rect.width)));
+    if (!rect.width) return;
+    this.emit((event.clientX - rect.left) / rect.width);
+  }
+
+  protected onKeydown(event: KeyboardEvent): void {
+    const current = this.progress() ?? 0;
+    let next: number;
+    switch (event.key) {
+      case 'ArrowRight':
+      case 'ArrowUp':
+        next = current + KEY_STEP;
+        break;
+      case 'ArrowLeft':
+      case 'ArrowDown':
+        next = current - KEY_STEP;
+        break;
+      case 'Home':
+        next = 0;
+        break;
+      case 'End':
+        next = 1;
+        break;
+      default:
+        return;
+    }
+    event.preventDefault();
+    this.emit(next);
+  }
+
+  private emit(ratio: number): void {
+    this.seek.emit(Math.max(0, Math.min(1, ratio)));
   }
 }
 
 /**
  * Oscilloscope : trait continu, pour un signal temporel.
- * <scrap-wave-line [data]="samples" />
+ * `<scrap-wave-line [data]="samples" />`
  */
 @Component({
   selector: 'scrap-wave-line',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <svg [attr.viewBox]="'0 0 ' + w + ' ' + h" preserveAspectRatio="none">
-      <line x1="0" [attr.y1]="h / 2" [attr.x2]="w" [attr.y2]="h / 2" stroke="var(--scrap-border-soft)" stroke-width="0.3" />
+    <svg [attr.viewBox]="'0 0 ' + w + ' ' + h" preserveAspectRatio="none" aria-hidden="true">
+      <line
+        x1="0"
+        [attr.y1]="h / 2"
+        [attr.x2]="w"
+        [attr.y2]="h / 2"
+        stroke="var(--scrap-border-soft)"
+        stroke-width="0.3"
+      />
       <polyline
         [attr.points]="points()"
         fill="none"
@@ -110,8 +189,14 @@ export class ScrapWaveBars {
     </svg>
   `,
   styles: `
-    :host { display: block; height: 72px; }
-    svg { width: 100%; height: 100%; }
+    :host {
+      display: block;
+      height: 72px;
+    }
+    svg {
+      width: 100%;
+      height: 100%;
+    }
   `,
 })
 export class ScrapWaveLine {
@@ -134,12 +219,20 @@ export class ScrapWaveLine {
 /**
  * VU-mètre : niveau 0..1 en segments rivetés.
  * Vert mousse → ocre → rouille selon l'intensité.
- * <scrap-vu-meter [level]="0.7" />
+ * `<scrap-vu-meter [level]="0.7" />`
  */
 @Component({
   selector: 'scrap-vu-meter',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="rail" role="meter" [attr.aria-valuenow]="level()" aria-valuemin="0" aria-valuemax="1">
+    <div
+      class="rail"
+      role="meter"
+      [attr.aria-label]="label()"
+      [attr.aria-valuenow]="level()"
+      aria-valuemin="0"
+      aria-valuemax="1"
+    >
       @for (seg of segments(); track seg.i) {
         <span class="seg" [class.on]="seg.on" [style.--seg-color]="seg.color"></span>
       }
@@ -161,13 +254,16 @@ export class ScrapWaveLine {
       transform: skewX(-8deg);
       transition: background 60ms linear;
     }
-    .seg.on { background: var(--seg-color); }
+    .seg.on {
+      background: var(--seg-color);
+    }
   `,
 })
 export class ScrapVuMeter {
   /** Niveau instantané 0..1. */
   readonly level = input.required<number>();
   readonly count = input(14);
+  readonly label = input('Niveau audio');
 
   protected readonly segments = computed(() => {
     const lvl = this.level();
@@ -191,17 +287,23 @@ export class ScrapVuMeter {
 /**
  * Rendu temps réel depuis un AnalyserNode Web Audio.
  *
+ * ```ts
  * const ctx = new AudioContext();
  * const analyser = ctx.createAnalyser();
  * source.connect(analyser);
  * // puis : <scrap-wave-live [analyser]="analyser" mode="line" />
+ * ```
  *
  * mode "line" = domaine temporel (oscilloscope),
  * mode "bars" = spectre de fréquences.
+ *
+ * La boucle s'arrête quand l'onglet passe en arrière-plan : inutile de
+ * brûler la batterie pour une animation que personne ne regarde.
  */
 @Component({
   selector: 'scrap-wave-live',
   imports: [ScrapWaveBars, ScrapWaveLine],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     @if (mode() === 'line') {
       <scrap-wave-line [data]="samples()" />
@@ -209,7 +311,11 @@ export class ScrapVuMeter {
       <scrap-wave-bars [data]="samples()" />
     }
   `,
-  styles: `:host { display: block; }`,
+  styles: `
+    :host {
+      display: block;
+    }
+  `,
 })
 export class ScrapWaveLive {
   readonly analyser = input.required<AnalyserNode>();
@@ -218,17 +324,35 @@ export class ScrapWaveLive {
   readonly resolution = input(64);
 
   protected readonly samples = signal<number[]>([]);
+
+  private readonly document = inject(DOCUMENT);
+  private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
   private rafId = 0;
+  private readonly visible = signal(true);
 
   constructor() {
     const destroyRef = inject(DestroyRef);
-    destroyRef.onDestroy(() => cancelAnimationFrame(this.rafId));
+
+    if (this.isBrowser) {
+      const onVisibility = () => this.visible.set(this.document.visibilityState === 'visible');
+      onVisibility();
+      this.document.addEventListener('visibilitychange', onVisibility);
+      destroyRef.onDestroy(() =>
+        this.document.removeEventListener('visibilitychange', onVisibility),
+      );
+    }
+
+    destroyRef.onDestroy(() => this.stop());
 
     effect(() => {
       const analyser = this.analyser();
       const mode = this.mode();
       const res = this.resolution();
-      cancelAnimationFrame(this.rafId);
+      const visible = this.visible();
+
+      this.stop();
+      if (!this.isBrowser || !visible) return;
+
       const buffer = new Uint8Array(
         mode === 'line' ? analyser.fftSize : analyser.frequencyBinCount,
       );
@@ -245,5 +369,10 @@ export class ScrapWaveLive {
       };
       tick();
     });
+  }
+
+  private stop(): void {
+    if (this.rafId) cancelAnimationFrame(this.rafId);
+    this.rafId = 0;
   }
 }

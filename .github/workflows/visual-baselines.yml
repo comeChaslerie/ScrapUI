@@ -1,0 +1,57 @@
+# Régénère les références de régression visuelle Linux.
+#
+# ATTENTION — GitHub n'expose un workflow `workflow_dispatch` que s'il existe
+# sur la branche par défaut, même en passant `--ref`. Ce fichier n'est donc
+# utilisable qu'une fois fusionné sur `main`. Pour le tout premier amorçage,
+# récupérer l'artefact `visual-baselines-linux` que le job `visual` de `ci.yml`
+# publie lorsqu'il échoue faute de références.
+#
+# À déclencher à la main depuis l'onglet Actions, ou en ligne de commande :
+#
+#   gh workflow run visual-baselines.yml            # une fois fusionné sur main
+#   git push -f origin HEAD:baselines/ma-branche   # avant la première fusion
+#   gh run watch
+#   gh run download -n visual-baselines-linux -D e2e/__screenshots__
+#   git add e2e/__screenshots__/linux && git commit -m "références visuelles Linux"
+#
+# Pourquoi ici plutôt qu'en local : les références doivent être rendues par le
+# même conteneur que le job `visual` de la CI. Le faire depuis un poste macOS
+# suppose un Docker capable de tirer l'image, ce qui n'est pas acquis derrière
+# un VPN d'entreprise.
+name: visual-baselines
+
+on:
+  workflow_dispatch:
+  # Contournement du problème d'amorçage décrit plus haut : `workflow_dispatch`
+  # exige que le fichier soit sur la branche par défaut. Pousser n'importe quel
+  # commit sur une branche `baselines/**` déclenche la régénération, ce qui
+  # fonctionne y compris avant la première fusion.
+  push:
+    branches: ['baselines/**']
+
+jobs:
+  regenerate:
+    runs-on: ubuntu-latest
+    container:
+      image: mcr.microsoft.com/playwright:v1.62.1-noble
+    steps:
+      - uses: actions/checkout@v4
+
+      - run: npm ci
+
+      - name: Construire la lib
+        run: npm run build
+
+      # --update-snapshots réécrit les références existantes et crée les
+      # manquantes. Le job réussit donc toujours : c'est la revue du diff,
+      # au moment du commit, qui fait office de garde-fou.
+      - name: Régénérer les références
+        run: npx playwright test --update-snapshots
+
+      - name: Publier les références
+        uses: actions/upload-artifact@v4
+        with:
+          name: visual-baselines-linux
+          path: e2e/__screenshots__/linux/
+          retention-days: 7
+          if-no-files-found: error

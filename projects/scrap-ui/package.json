@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "Direction artistique commune — tokens, composants et layouts Angular (charte Scrap Node)",
   "author": "comeChaslerie",
-  "license": "UNLICENSED",
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/comeChaslerie/ScrapUI.git"
@@ -15,10 +15,20 @@
   "peerDependencies": {
     "@angular/common": "^22.1.0",
     "@angular/core": "^22.1.0",
+    "@angular/forms": "^22.1.0",
     "@angular/platform-browser": "^22.1.0"
   },
   "dependencies": {
     "tslib": "^2.3.0"
   },
-  "sideEffects": false
+  "sideEffects": false,
+  "exports": {
+    "./styles/*": {
+      "sass": "./styles/*",
+      "default": "./styles/*"
+    },
+    "./assets/*": {
+      "default": "./assets/*"
+    }
+  }
 }

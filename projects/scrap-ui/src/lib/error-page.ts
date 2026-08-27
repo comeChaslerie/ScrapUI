@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { ScrapSplat } from './splat';
 
 /**
@@ -9,6 +9,7 @@ import { ScrapSplat } from './splat';
  */
 @Component({
   selector: 'scrap-error-page',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [ScrapSplat],
   template: `
     <div class="wrap scrap-grain">
@@ -34,7 +35,10 @@ import { ScrapSplat } from './splat';
       color: var(--scrap-copper);
       opacity: 0.16;
     }
-    .wrap { position: relative; overflow: hidden; }
+    .wrap {
+      position: relative;
+      overflow: hidden;
+    }
     .code {
       margin: 0;
       font-family: var(--scrap-font-display);
