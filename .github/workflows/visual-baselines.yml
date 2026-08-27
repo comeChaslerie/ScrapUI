@@ -8,7 +8,8 @@
 #
 # À déclencher à la main depuis l'onglet Actions, ou en ligne de commande :
 #
-#   gh workflow run visual-baselines.yml
+#   gh workflow run visual-baselines.yml            # une fois fusionné sur main
+#   git push -f origin HEAD:baselines/ma-branche   # avant la première fusion
 #   gh run watch
 #   gh run download -n visual-baselines-linux -D e2e/__screenshots__
 #   git add e2e/__screenshots__/linux && git commit -m "références visuelles Linux"
@@ -21,6 +22,12 @@ name: visual-baselines
 
 on:
   workflow_dispatch:
+  # Contournement du problème d'amorçage décrit plus haut : `workflow_dispatch`
+  # exige que le fichier soit sur la branche par défaut. Pousser n'importe quel
+  # commit sur une branche `baselines/**` déclenche la régénération, ce qui
+  # fonctionne y compris avant la première fusion.
+  push:
+    branches: ['baselines/**']
 
 jobs:
   regenerate:

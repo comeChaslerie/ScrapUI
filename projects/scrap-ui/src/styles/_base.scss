@@ -22,7 +22,8 @@ body {
 h1,
 h2,
 h3,
-.scrap-display {
+.scrap-display,
+.scrap-hero-title {
   font-family: var(--scrap-font-display);
   font-weight: 900;
   text-transform: uppercase;
@@ -43,6 +44,10 @@ h3 {
   letter-spacing: 0.02em;
 }
 
+// Le traitement d'affichage vient du groupe de titres ci-dessus : la classe
+// n'ajoute que la taille et le désaxage. Sans cela, .scrap-hero-title donnait
+// une taille énorme dans la fonte de corps, en minuscules — l'inverse de ce
+// que promet la charte.
 .scrap-hero-title {
   font-size: var(--scrap-fs-hero);
   // léger désaxage "tampon mal appliqué"
