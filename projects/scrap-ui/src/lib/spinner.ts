@@ -1,9 +1,10 @@
-import { Component, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { ScrapIcon } from './icon';
 
 /** Loader : engrenage qui tourne par à-coups, comme une vieille mécanique. */
 @Component({
   selector: 'scrap-spinner',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [ScrapIcon],
   template: `
     <scrap-icon name="gear" [size]="size()" />
@@ -30,10 +31,14 @@ import { ScrapIcon } from './icon';
       color: var(--scrap-ink-muted);
     }
     @keyframes scrap-spin {
-      to { transform: rotate(360deg); }
+      to {
+        transform: rotate(360deg);
+      }
     }
     @media (prefers-reduced-motion: reduce) {
-      scrap-icon { animation-duration: 4s; }
+      scrap-icon {
+        animation-duration: 4s;
+      }
     }
   `,
 })

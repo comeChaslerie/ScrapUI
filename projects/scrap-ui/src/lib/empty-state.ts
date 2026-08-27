@@ -1,5 +1,5 @@
-import { Component, input } from '@angular/core';
-import { ScrapIcon } from './icon';
+import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { ScrapIcon, type ScrapIconName } from './icon';
 
 /**
  * État vide commun : « rien dans la casse ».
@@ -9,6 +9,7 @@ import { ScrapIcon } from './icon';
  */
 @Component({
   selector: 'scrap-empty-state',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [ScrapIcon],
   template: `
     <div class="box scrap-grain">
@@ -31,7 +32,9 @@ import { ScrapIcon } from './icon';
       border: var(--scrap-border-w) dashed var(--scrap-border-soft);
       color: var(--scrap-ink-muted);
     }
-    scrap-icon { color: var(--scrap-border-soft); }
+    scrap-icon {
+      color: var(--scrap-border-soft);
+    }
     .title {
       margin: 0;
       font-family: var(--scrap-font-display);
@@ -40,11 +43,14 @@ import { ScrapIcon } from './icon';
       letter-spacing: 0.08em;
       color: var(--scrap-ink);
     }
-    .msg { margin: 0; max-width: 40ch; }
+    .msg {
+      margin: 0;
+      max-width: 40ch;
+    }
   `,
 })
 export class ScrapEmptyState {
   readonly title = input('Rien dans la casse');
   readonly message = input<string>();
-  readonly icon = input('recycle');
+  readonly icon = input<ScrapIconName>('recycle');
 }

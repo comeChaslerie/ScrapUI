@@ -1,5 +1,6 @@
-import { Component, input, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input, signal } from '@angular/core';
 import { ScrapIcon } from './icon';
+import { ScrapIdGenerator } from './id';
 
 export interface ScrapNavLink {
   label: string;
@@ -16,15 +17,16 @@ export interface ScrapNavLink {
  */
 @Component({
   selector: 'scrap-header',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [ScrapIcon],
   template: `
     <header class="bar scrap-grain scrap-torn-bottom">
-      <a class="brand" href="/">
+      <a class="brand" [href]="homeHref()">
         <ng-content select="[logo]" />
         <span class="name">{{ appName() }}</span>
       </a>
 
-      <nav [class.open]="menuOpen()">
+      <nav [id]="navId" [attr.aria-label]="appName()" [class.open]="menuOpen()">
         @for (link of links(); track link.href) {
           <a [href]="link.href" (click)="menuOpen.set(false)">{{ link.label }}</a>
         }
@@ -36,7 +38,8 @@ export interface ScrapNavLink {
         type="button"
         (click)="menuOpen.set(!menuOpen())"
         [attr.aria-expanded]="menuOpen()"
-        aria-label="Menu"
+        [attr.aria-controls]="navId"
+        [attr.aria-label]="menuOpen() ? 'Fermer le menu' : 'Ouvrir le menu'"
       >
         <scrap-icon [name]="menuOpen() ? 'close' : 'menu'" [size]="24" />
       </button>
@@ -86,11 +89,17 @@ export interface ScrapNavLink {
       font-size: var(--scrap-fs-small);
       letter-spacing: 0.08em;
       border-bottom: 2px solid transparent;
-      transition: border-color var(--scrap-transition), color var(--scrap-transition);
+      transition:
+        border-color var(--scrap-transition),
+        color var(--scrap-transition);
     }
     nav a:hover {
       color: var(--scrap-copper);
       border-bottom-color: var(--scrap-copper);
+    }
+    .burger:focus-visible {
+      outline: 3px dashed var(--scrap-copper);
+      outline-offset: 2px;
     }
     .burger {
       display: none;
@@ -100,8 +109,18 @@ export interface ScrapNavLink {
       cursor: pointer;
       padding: var(--scrap-space-1);
     }
+    @media (prefers-reduced-motion: reduce) {
+      .name {
+        transform: none;
+      }
+      nav a {
+        transition: none;
+      }
+    }
     @media (max-width: 720px) {
-      .burger { display: block; }
+      .burger {
+        display: block;
+      }
       nav {
         display: none;
         position: absolute;
@@ -115,13 +134,22 @@ export interface ScrapNavLink {
         background: var(--scrap-bark);
         border-bottom: var(--scrap-border-w) solid var(--scrap-copper);
       }
-      nav.open { display: flex; }
-      :host { position: relative; display: block; }
+      nav.open {
+        display: flex;
+      }
+      :host {
+        position: relative;
+        display: block;
+      }
     }
   `,
 })
 export class ScrapHeader {
   readonly appName = input.required<string>();
   readonly links = input<ScrapNavLink[]>([]);
+  /** Cible du bloc marque. Utile quand l'appli n'est pas servie à la racine. */
+  readonly homeHref = input('/');
+
+  protected readonly navId = inject(ScrapIdGenerator).next('scrap-nav');
   protected readonly menuOpen = signal(false);
 }

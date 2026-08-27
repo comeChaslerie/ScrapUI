@@ -7,15 +7,15 @@
 
 // --- Palette brute (ne pas utiliser directement dans les composants :
 //     passer par les tokens sémantiques ci-dessous) ---
-$scrap-black:  #000000;
-$scrap-bark:   #322216; // brun foncé
+$scrap-black: #000000;
+$scrap-bark: #322216; // brun foncé
 $scrap-copper: #956140; // brun cuivré
-$scrap-steel:  #718993; // bleu-gris
-$scrap-white:  #ffffff;
+$scrap-steel: #718993; // bleu-gris
+$scrap-white: #ffffff;
 
 // --- Couleurs sémantiques (dérivées de l'esprit de la palette) ---
-$scrap-rust:  #8a3324; // erreur — rouille
-$scrap-moss:  #5f7a3f; // succès — mousse
+$scrap-rust: #8a3324; // erreur — rouille
+$scrap-moss: #5f7a3f; // succès — mousse
 $scrap-ochre: #b3822f; // avertissement — ocre
 
 @mixin semantic-tokens {
@@ -32,7 +32,7 @@ $scrap-ochre: #b3822f; // avertissement — ocre
 @mixin light-tokens {
   @include semantic-tokens;
   --scrap-bg: #{$scrap-white};
-  --scrap-bg-alt: #f4efe9;            // blanc cassé chaud dérivé du cuivre
+  --scrap-bg-alt: #f4efe9; // blanc cassé chaud dérivé du cuivre
   --scrap-surface: #{$scrap-white};
   --scrap-ink: #{$scrap-bark};
   --scrap-ink-strong: #{$scrap-black};
@@ -54,7 +54,7 @@ $scrap-ochre: #b3822f; // avertissement — ocre
   --scrap-danger: #b0492f;
   --scrap-success: #7d9c5a;
   --scrap-warning: #cf9c45;
-  --scrap-bg: #1a120b;                // brun quasi noir
+  --scrap-bg: #1a120b; // brun quasi noir
   --scrap-bg-alt: #{$scrap-bark};
   --scrap-surface: #241910;
   --scrap-ink: #efe6dc;
@@ -98,7 +98,7 @@ $scrap-ochre: #b3822f; // avertissement — ocre
   --scrap-space-6: 4rem;
 
   // --- Divers ---
-  --scrap-radius: 2px;               // esprit brut : angles quasi vifs
+  --scrap-radius: 2px; // esprit brut : angles quasi vifs
   --scrap-border-w: 2px;
   --scrap-transition: 150ms cubic-bezier(0.2, 0.8, 0.3, 1);
 

@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 
 /**
  * Footer commun : plaque sombre, contenu projeté libre,
@@ -6,6 +6,7 @@ import { Component, input } from '@angular/core';
  */
 @Component({
   selector: 'scrap-footer',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <footer class="scrap-grain">
       <div class="content">

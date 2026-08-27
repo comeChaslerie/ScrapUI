@@ -1,19 +1,18 @@
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { ScrapIcon } from './icon';
-
-type Theme = 'light' | 'dark';
-const STORAGE_KEY = 'scrap-theme';
+import { ScrapTheme } from './theme';
 
 /**
- * Bascule clair/sombre : pose data-scrap-theme sur <html>
- * et mémorise le choix dans localStorage.
+ * Bascule clair/sombre. L'état vit dans le service {@link ScrapTheme} :
+ * plusieurs boutons dans la même page restent synchronisés.
  */
 @Component({
   selector: 'scrap-theme-toggle',
   imports: [ScrapIcon],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <button type="button" (click)="toggle()" [attr.aria-label]="'Passer en mode ' + next()">
-      <scrap-icon [name]="theme() === 'dark' ? 'sun' : 'moon'" [size]="18" />
+    <button type="button" (click)="theme.toggle()" [attr.aria-label]="label()">
+      <scrap-icon [name]="theme.theme() === 'dark' ? 'sun' : 'moon'" [size]="18" />
     </button>
   `,
   styles: `
@@ -28,32 +27,25 @@ const STORAGE_KEY = 'scrap-theme';
       transform: rotate(2deg);
       transition: transform var(--scrap-transition);
     }
-    button:hover { transform: rotate(-2deg) scale(1.05); }
+    button:hover {
+      transform: rotate(-2deg) scale(1.05);
+    }
+    button:focus-visible {
+      outline: 3px dashed var(--scrap-secondary);
+      outline-offset: 3px;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      button,
+      button:hover {
+        transform: none;
+        transition: none;
+      }
+    }
   `,
 })
 export class ScrapThemeToggle {
-  protected readonly theme = signal<Theme>(this.initial());
-
-  protected next(): Theme {
-    return this.theme() === 'dark' ? 'light' : 'dark';
-  }
-
-  protected toggle(): void {
-    const t = this.next();
-    this.theme.set(t);
-    document.documentElement.setAttribute('data-scrap-theme', t);
-    try {
-      localStorage.setItem(STORAGE_KEY, t);
-    } catch {}
-  }
-
-  private initial(): Theme {
-    let t: Theme | null = null;
-    try {
-      t = localStorage.getItem(STORAGE_KEY) as Theme | null;
-    } catch {}
-    t ??= matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-    document.documentElement.setAttribute('data-scrap-theme', t);
-    return t;
-  }
+  protected readonly theme = inject(ScrapTheme);
+  protected readonly label = computed(
+    () => `Passer en mode ${this.theme.theme() === 'dark' ? 'clair' : 'sombre'}`,
+  );
 }
