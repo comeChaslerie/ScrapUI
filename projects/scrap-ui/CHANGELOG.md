@@ -10,6 +10,8 @@ si l'API TypeScript ne bouge pas.
 
 ## [Non publié]
 
+## [0.2.0] — 2026-08-27
+
 ### Ajouté
 
 - `ScrapTheme` : service de thème partagé, sûr en SSR, injectable partout.
