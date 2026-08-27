@@ -10,6 +10,13 @@ si l'API TypeScript ne bouge pas.
 
 ## [Non publié]
 
+### Ajouté
+
+- Vitrine : un bouton « Rejouer » relance les animations d'entrée. Une animation
+  CSS ne se déclenche qu'à l'insertion de l'élément, il fallait donc recharger
+  la page pour revoir `.scrap-stamp-in` ou l'arrivée du code d'une page
+  d'erreur.
+
 ## [0.2.0] — 2026-08-27
 
 ### Ajouté
