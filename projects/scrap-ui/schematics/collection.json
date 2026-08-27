@@ -3,7 +3,8 @@
   "schematics": {
     "ng-add": {
       "description": "Branche le thème Scrap UI dans le projet (import SCSS + favicon).",
-      "factory": "./ng-add/index#ngAdd"
+      "factory": "./ng-add/index#ngAdd",
+      "schema": "./ng-add/schema.json"
     }
   }
 }

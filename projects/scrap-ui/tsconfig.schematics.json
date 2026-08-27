@@ -1,0 +1,12 @@
+/* Le schematic ng-add est du code Node, pas du navigateur : il a son propre
+   contexte de compilation, avec les types Node et sans Angular. */
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../../out-tsc/schematics",
+    "types": ["vitest/globals", "node"],
+    "module": "commonjs",
+    "moduleResolution": "node"
+  },
+  "include": ["schematics/**/*.ts"]
+}
