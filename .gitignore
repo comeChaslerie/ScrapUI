@@ -37,7 +37,10 @@ yarn-error.log
 /libpeerconnection.log
 testem.log
 /typings
+# Les références de régression visuelle sont au contraire versionnées : ce sont
+# elles qui font foi. Elles vivent dans e2e/__screenshots__/<plateforme>/.
 __screenshots__/
+!e2e/__screenshots__/
 
 # System files
 .DS_Store
