@@ -1,210 +1,30 @@
-<scrap-header appName="Scrap UI" [links]="links">
-  <!-- Slot logo : chaque projet met le sien ici -->
-  <scrap-icon logo name="node" [size]="36" style="color: var(--scrap-copper)" />
+<scrap-header appName="Scrap UI" homeHref="/fondations">
+  <span logo class="logo">SU</span>
   <scrap-theme-toggle actions />
 </scrap-header>
 
-<main>
-  <section class="hero">
-    <scrap-splat class="hero-splat" name="burst" [size]="260" [rotate]="18" />
-    <span class="scrap-stamp scrap-stamp-in">Direction artistique commune</span>
-    <h1 class="scrap-hero-title">Récup.<br />Brut.<br />Cohérent.</h1>
-    <p class="lede">
-      La base visuelle partagée de tous les projets : palette, typographies,
-      textures et composants Angular. Seul le logo change.
-    </p>
-    <div class="hero-actions">
-      <button scrap-button (click)="modalOpen.set(true)">
-        Ouvrir la modale <scrap-icon name="arrow" [size]="16" />
-      </button>
-      <button scrap-button variant="ghost">Voir la charte</button>
-    </div>
-  </section>
-
-  <hr class="scrap-rule" />
-
-  <section id="couleurs" class="scrap-reveal">
-    <h2>Palette</h2>
-    <div class="swatches">
-      @for (c of palette; track c.hex) {
-        <div class="swatch">
-          <div class="chip" [style.background]="c.hex"></div>
-          <strong>{{ c.name }}</strong>
-          <code>{{ c.hex }}</code>
-        </div>
+<div class="shell">
+  <nav class="stories" aria-label="Composants">
+    <p class="stories-title">Vitrine</p>
+    <ul>
+      @for (story of stories; track story.path) {
+        <li>
+          <a [routerLink]="story.path" routerLinkActive="on">{{ story.title }}</a>
+        </li>
       }
-    </div>
-    <h3>Sémantiques</h3>
-    <div class="badges">
-      @for (t of tones; track t) {
-        <scrap-badge [tone]="t">{{ t }}</scrap-badge>
-      }
-    </div>
-  </section>
+    </ul>
+  </nav>
 
-  <section id="composants" class="scrap-reveal">
-    <h2>Composants</h2>
-    <div class="grid">
-      <scrap-card title="Boutons & toasts">
-        <div class="stack">
-          <button scrap-button (click)="notify('success')">Succès</button>
-          <button scrap-button variant="secondary" (click)="notify('info')">Info</button>
-          <button scrap-button variant="ghost" (click)="notify('warning')">Avertissement</button>
-          <button scrap-button variant="ghost" (click)="notify('danger')">Erreur</button>
-        </div>
-      </scrap-card>
-
-      <scrap-card title="Formulaire">
-        <form class="stack" (submit)="$event.preventDefault()">
-          <scrap-field label="Nom du projet" hint="Il rejoindra la casse.">
-            <input class="scrap-input" placeholder="ex. DataGlitchCore" />
-          </scrap-field>
-          <scrap-field label="Catégorie">
-            <select class="scrap-select">
-              <option>Moteur</option>
-              <option>Interface</option>
-              <option>Outillage</option>
-            </select>
-          </scrap-field>
-          <label class="scrap-choice">
-            <input type="checkbox" class="scrap-checkbox" checked /> Pièce testée
-          </label>
-          <div class="stack-row">
-            <label class="scrap-choice">
-              <input type="radio" name="etat" class="scrap-radio" checked /> Fonctionnel
-            </label>
-            <label class="scrap-choice">
-              <input type="radio" name="etat" class="scrap-radio" /> Pour pièces
-            </label>
-          </div>
-          <button scrap-button variant="secondary">Envoyer</button>
-        </form>
-      </scrap-card>
-
-      <scrap-card title="Icônes & loader">
-        <div class="icon-row">
-          @for (i of icons; track i) {
-            <span class="icon-cell scrap-jitter" [title]="i"><scrap-icon [name]="i" [size]="26" /></span>
-          }
-        </div>
-        <hr class="scrap-rule" />
-        <scrap-spinner label="Soudure en cours…" />
-      </scrap-card>
-
-      <scrap-card title="État vide">
-        <scrap-empty-state message="Aucune pièce ne correspond à ta recherche.">
-          <button scrap-button variant="ghost">Ratisser la casse</button>
-        </scrap-empty-state>
-      </scrap-card>
-    </div>
-
-    <h3>Onglets</h3>
-    <scrap-tabs>
-      <scrap-tab label="Inventaire">
-        <table class="scrap-table">
-          <thead>
-            <tr><th>Pièce</th><th>Réf.</th><th>État</th></tr>
-          </thead>
-          <tbody>
-            @for (row of stock; track row.ref) {
-              <tr><td>{{ row.piece }}</td><td><code>{{ row.ref }}</code></td><td>{{ row.etat }}</td></tr>
-            }
-          </tbody>
-        </table>
-      </scrap-tab>
-      <scrap-tab label="Notes">
-        <p>Tout ce qui rentre dans la casse est pesé, trié, étiqueté.</p>
-      </scrap-tab>
-      <scrap-tab label="Historique">
-        <scrap-empty-state title="Rien pour l'instant" icon="gear" />
-      </scrap-tab>
-    </scrap-tabs>
-  </section>
-
-  <section id="audio" class="scrap-reveal">
-    <h2>Audio</h2>
-    <div class="grid">
-      <scrap-card title="Forme d'onde — clic pour seek">
-        <scrap-wave-bars [data]="peaks" [progress]="playProgress()" (seek)="playProgress.set($event)" />
-      </scrap-card>
-      <scrap-card title="Oscilloscope">
-        <scrap-wave-line [data]="oscillo()" />
-      </scrap-card>
-      <scrap-card title="VU-mètre">
-        <scrap-vu-meter [level]="vuLevel()" />
-      </scrap-card>
-    </div>
-  </section>
-
-  <section id="reglages" class="scrap-reveal">
-    <h2>Réglages</h2>
-    <scrap-card title="Curseurs">
-      <div class="slider-stack">
-        <scrap-slider [(value)]="volumeFull">
-          <scrap-icon icon [name]="volumeIcon(volumeFull())" [size]="24" />
-        </scrap-slider>
-        <scrap-slider [(value)]="volumeMid">
-          <scrap-icon icon [name]="volumeIcon(volumeMid())" [size]="24" />
-        </scrap-slider>
-        <scrap-slider [(value)]="volumeOff">
-          <scrap-icon icon [name]="volumeIcon(volumeOff())" [size]="24" />
-        </scrap-slider>
-        <scrap-slider [(value)]="stepped" [step]="10" [ticks]="true">
-          <scrap-icon icon [name]="volumeIcon(stepped())" [size]="24" />
-        </scrap-slider>
-        <scrap-slider [value]="0" [ticks]="true" [disabled]="true">
-          <scrap-icon icon name="mute" [size]="24" />
-        </scrap-slider>
-      </div>
-    </scrap-card>
-  </section>
-
-  <section id="curseurs" class="scrap-reveal">
-    <h2>Curseurs</h2>
-    <div class="cursor-grid">
-      @for (c of cursors; track c.cls) {
-        <div class="cursor-zone" [class]="c.cls">
-          <code>.{{ c.cls }}</code>
-          <span>{{ c.label }} — survole-moi</span>
-        </div>
-      }
-    </div>
-  </section>
-
-  <section id="typo" class="scrap-reveal">
-    <h2>Typographie</h2>
-    <scrap-card>
-      <p class="type-demo display">Helvetica Black — titres tampon</p>
-      <p class="type-demo">Arial regular — corps de texte, lisible et sans chichis.</p>
-      <p class="type-demo"><strong>Arial bold — sous-titres et emphase.</strong></p>
-    </scrap-card>
-  </section>
-
-  <section id="erreur" class="scrap-reveal">
-    <h2>Page d'erreur</h2>
-    <scrap-error-page code="404" message="Cette pièce n'est pas dans la casse.">
-      <a scrap-button href="#composants">Retour à l'atelier</a>
-    </scrap-error-page>
-  </section>
-</main>
+  <main id="contenu">
+    <router-outlet />
+  </main>
+</div>
 
 <scrap-footer appName="Scrap UI">
   <div>
-    <h3>Projets</h3>
-    <p>DataGlitchCore · Scrap Node · …</p>
-  </div>
-  <div>
-    <h3>Contact</h3>
-    <p>come.chaslerie.pro&#64;gmail.com</p>
+    <h3>Direction artistique</h3>
+    <p>Palette et typos figées.<br />Seul le logo change d'un projet à l'autre.</p>
   </div>
 </scrap-footer>
-
-<scrap-modal [(open)]="modalOpen" title="Confirmer la découpe">
-  <p>La pièce <strong>CH-042</strong> va passer à la disqueuse. Cette action est irréversible.</p>
-  <div actions>
-    <button scrap-button variant="ghost" (click)="modalOpen.set(false)">Annuler</button>
-    <button scrap-button (click)="modalOpen.set(false); notify('success')">Découper</button>
-  </div>
-</scrap-modal>
 
 <scrap-toasts />
