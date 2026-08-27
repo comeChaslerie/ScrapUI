@@ -1,10 +1,11 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { StoryCase, StoryPage } from '../story-page';
+import { StoryReplay } from '../story-replay';
 
 @Component({
   selector: 'story-utilities',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [StoryPage, StoryCase],
+  imports: [StoryPage, StoryCase, StoryReplay],
   template: `
     <story-page
       title="Utilitaires"
@@ -49,12 +50,20 @@ import { StoryCase, StoryPage } from '../story-page';
 
       <story-case
         name="Animations"
-        note="Toutes neutralisées sous prefers-reduced-motion."
+        note="Toutes neutralisées sous prefers-reduced-motion. Les animations d'entrée ne se déclenchent qu'à l'insertion de l'élément : le bouton les rejoue sans recharger la page."
         [stack]="true"
       >
-        <div class="demo-plate scrap-stamp-in">.scrap-stamp-in — coup de tampon à l'apparition</div>
-        <div class="demo-plate scrap-jitter">.scrap-jitter — tremblement au survol</div>
-        <div class="demo-plate scrap-reveal">.scrap-reveal — apparition au défilement</div>
+        <story-replay>
+          <ng-template>
+            <div class="demo-plate scrap-stamp-in">
+              .scrap-stamp-in — coup de tampon à l'apparition
+            </div>
+            <div class="demo-plate scrap-reveal">.scrap-reveal — apparition au défilement</div>
+          </ng-template>
+        </story-replay>
+        <div class="demo-plate scrap-jitter">
+          .scrap-jitter — tremblement au survol, rejoué à chaque passage
+        </div>
       </story-case>
     </story-page>
   `,
