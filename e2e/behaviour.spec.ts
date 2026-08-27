@@ -65,6 +65,9 @@ test.describe('modale', () => {
     await openStory(page, 'modale-toasts');
     const opener = page.getByRole('button', { name: 'Ouvrir la modale' });
     await opener.click();
+    // Sans cette attente, la première tabulation part avant l'ouverture et
+    // le test devient instable.
+    await expect(page.getByRole('dialog')).toBeVisible();
 
     // Le piège vient du <dialog> natif : quel que soit le nombre de
     // tabulations, le focus ne doit jamais ressortir vers la page.
